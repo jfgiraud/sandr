@@ -34,3 +34,45 @@ Hell<o> J<o>hn D<O>E
 $ echo 'Hello John DOE' | sandr -i -c -S '([aeiouy])' -r'<\1>'
 H<e>ll<o> J<o>hn D<O><E>
 ```
+
+### use option `-e` to extract a replacements map witch can be reused later.
+```
+$ echo 'Hello John DOE' | sandr -e -i -c -S '([aeiouy])' -r'<\1>' > map
+$ cat map
+e => <e>
+E => <E>
+o => <o>
+O => <O>
+```
+
+### use option `-a` to apply a replacements map on files or standard streams
+```
+$ echo 'Hello John DOE' | sandr -a map
+H<e>ll<o> J<o>hn D<O><E>
+```
+
+### use option `-t` to simulate replacements
+```
+$ echo 'Hello john doe' > hello_john_doe.txt
+$ sandr -t -i -s hello -r bye hello_john_doe.txt 
+bye john doe
+```
+
+### use option `-d` to simulate and view replacements
+```
+$ sandr -d -i -s hello -r bye hello_john_doe.txt 
+{Hello=>bye} john doe
+```
+
+### use option `-R` to rename file when replacements can be done in filename
+```
+$ sandr -R -d -i -s hello -r bye hello_john_doe.txt 
+{Hello=>bye} john doe
+File hello_john_doe.txt will be renamed to bye_john_doe.txt ({hello=>bye}_john_doe.txt)
+$ sandr -R -i -s hello -r bye hello_john_doe.txt 
+Processed: hello_john_doe.txt (file renamed to bye_john_doe.txt)
+$ ls
+bye_john_doe.txt   sandr
+$ cat bye_john_doe.txt 
+bye john doe
+```
