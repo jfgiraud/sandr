@@ -35,7 +35,7 @@ $ echo 'Hello John DOE' | sandr -i -c -S '([aeiouy])' -r'<\1>'
 H<e>ll<o> J<o>hn D<O><E>
 ```
 
-### use option `-e` to extract a replacements map witch can be reused later.
+### use option `-e` to extract a replacements map witch can be reused later
 ```
 $ echo 'Hello John DOE' | sandr -e -i -c -S '([aeiouy])' -r'<\1>' > map
 $ cat map
