@@ -9,7 +9,8 @@ It supports replacements for *fixed strings* and *regular expressions*, ignoring
 For *regular expressions*, matching groups can be reused in replacement string.
 
 Some options permit to :
-- extract matches and apply mass replacement
+- extract an association map (matches/replacements)
+- apply an association map for mass replacements
 - try to keep the character case
 - preview modifications
 - allow file renaming
@@ -51,9 +52,14 @@ O => <O>
 ```
 
 #### use option `-a` to apply a replacements map on files or standard streams
+
+The given map can be handwritten or generated with the `-e` option.
 ```
+$ cat map
+Hello => Bonjour
+DOE => Durand
 $ echo 'Hello John DOE' | sandr -a map
-H<e>ll<o> J<o>hn D<O><E>
+Bonjour John Durand
 ```
 
 #### use option `-t` to simulate replacements
