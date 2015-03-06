@@ -31,8 +31,8 @@ Hell<o> J<o>hn D<o>E
 
 #### add option `-c` to try to reuse same case when replacing
 ```
-$ echo 'Hello John DOE' | sandr -i -c -s o -r'<o>'
-Hell<o> J<o>hn D<O>E
+$ echo 'Hello John Doe and Jane DOE' | sandr -i -c -s 'doe' -r 'smith'
+Hello John Smith and Jane SMITH
 ```
 
 #### use option `-S` to search a pattern, the `-r` option can contain a reference to a matched group
