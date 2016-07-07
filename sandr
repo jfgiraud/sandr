@@ -3,6 +3,7 @@
 import difflib
 import getopt
 import os
+import os.path
 import re
 import sys
 import io
@@ -54,7 +55,7 @@ COPYRIGHT
 	License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
 	This is free software: you are free to change and redistribute it.  
 	There is NO WARRANTY, to the extent permitted by law.
-    ''' % {'prog': sys.argv[0]})
+    ''' % {'prog': os.path.basename(sys.argv[0])})
     sys.exit(retval)
 
 search = None
@@ -220,6 +221,9 @@ try:
     opts, args = getopt.getopt(sys.argv[1:], "hs:S:r:itea:cl:dR", ["help","search=","search-regexp=","replace=","ignore-case","simulate","extract-map","apply-map=","case","min-matching-length=","diff","rename"])
 except getopt.GetoptError:
     usage(2)
+
+if len(opts) == 0:
+    usage()
 
 for o, a in opts:
     if o in ("-h", "--help"):
