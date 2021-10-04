@@ -12,5 +12,5 @@ blocks:
           commands:
             - whoami
             - checkout
-            - apt-get install python3-venv
+            - sudo apt-get install python3-venv
             - make test
