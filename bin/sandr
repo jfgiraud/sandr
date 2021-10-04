@@ -114,7 +114,7 @@ def colorize(old, new):
                                  colorize_value('=>', 'box'),
                                  colorize_value(b, 'new-value'), ('\n' if crb else ''), colorize_value('}', 'box'))
         else:
-            s += a + ('\n' if cra else '')
+            s += a
     return s
     
 
