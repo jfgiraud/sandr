@@ -10,5 +10,7 @@ blocks:
       jobs:
         - name: test
           commands:
+            - whoami
             - checkout
+            - apt-get install python3-venv
             - make test
