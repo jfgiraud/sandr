@@ -3,10 +3,9 @@ SHELL=bash
 
 .PHONY: usage
 usage:
-	echo $$DOCKER_USER
 	@cat - <<EOF
 		Targets:
-		* test: run all tests (you must be inside the container)
+		* test: run all tests
 	EOF
 
 env: tests/requirements.txt
@@ -15,11 +14,11 @@ env: tests/requirements.txt
 
 .PHONY: test_py
 test_py: env
-	env/bin/python3 -m pytest tests/unit_tests.py
+	env/bin/python3 -m pytest tests/
 
 .PHONY: test_sh
 test_sh:
-	tests/bash_unit tests/functional_tests.sh
+	tests/bash_unit tests/test_ft.sh
 
 .PHONY: test
 test: test_py test_sh

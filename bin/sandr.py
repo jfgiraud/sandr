@@ -61,20 +61,6 @@ COPYRIGHT
     sys.exit(retval)
 
 
-search = None
-replace = None
-flag_use_regexp = False
-flag_ignore_case = False
-flag_simulate = False
-flag_extract_map = False
-flag_detect = False
-flag_diff = False
-flag_rename_file = False
-matching_min_length = 3
-apply_map = None
-flag_execute = False
-
-
 def error(message):
     print(message, file=sys.stderr)
     sys.exit(1)
@@ -229,62 +215,8 @@ def extract_map(files):
     return replacements
 
 
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "hs:S:r:itea:cl:dRx", ["help", "search=", "search-regexp=", "replace=",
-                                                                     "ignore-case", "simulate", "extract-map",
-                                                                     "apply-map=", "case", "min-matching-length=",
-                                                                     "diff", "rename", "execute"])
-except getopt.GetoptError:
-    usage(2)
-
-if len(opts) == 0:
-    usage()
-
-for o, a in opts:
-    if o in ("-h", "--help"):
-        usage()
-    if o in ("-s", "--search"):
-        search = a
-    if o in ("-r", "--replace"):
-        replace = a
-    if o in ("-S", "--search-regexp"):
-        search = a
-        flag_use_regexp = True
-    if o in ("-i", "--ignore-case"):
-        flag_ignore_case = True
-    if o in ("-t", "--simulate"):
-        flag_simulate = True
-    if o in ("-d", "--diff"):
-        flag_simulate = True
-        flag_diff = True
-    if o in ("-e", "--extract-map"):
-        flag_extract_map = True
-    if o in ("-a", "--apply-map"):
-        apply_map = a
-    if o in ("-c", "--case"):
-        flag_detect = True
-    if o in ("-R", "--rename"):
-        flag_rename_file = True
-    if o in ("-x", "--execute"):
-        flag_execute = True
-    if o in ("-l", "--min-matching-length"):
-        matching_min_length = int(a)
-
-if flag_extract_map and flag_simulate:
-    error("setting option --simulate makes no sense with option --extract-map") 
-
-if flag_extract_map and apply_map:
-    error("--extract-map and --apply-map option are mutually exclusives") 
-
-if flag_extract_map and (search is None or replace is None):
-    error("setting option --extract-map implies to set options --search and --replace") 
-
-if (apply_map is None) and (search is None or replace is None):
-    error("--search and --replace are required when --apply-map is not used")
-
-
 def create_tmp_and_init(fd_in):
-    (fno, newfile) = tempfile.mkstemp() 
+    (fno, newfile) = tempfile.mkstemp()
     with open(fno, 'wt') as fd_out:
         for line in fd_in:
             fd_out.write(line)
@@ -302,12 +234,6 @@ def op(filename):
                 return False, filename
 
 
-if len(args) == 0:
-    args = ["-"]
-
-args = [op(x) for x in args]
-
-
 def apply_replacements(config):
     pattern = '|'.join(map(re.escape, sorted(config, reverse=True)))
     repl = lambda matchobj: config[matchobj.group(0)]
@@ -319,22 +245,96 @@ def write_multiline(s):
     return s.replace('\n', '\n| ')
 
 
-if flag_extract_map:
-    replacements = extract_map(args)
-    for replacement in replacements:
-        print(replacement, write_multiline(replacements[replacement]), sep=' => ')
-elif apply_map is not None:
-    config = {}
-    with open(apply_map, 'rt') as fd:
-        flag_use_regexp = None
-        for line in fd:
-            line = line.strip()
-            if not line.startswith("| "):
-                (k, v) = line.split(' => ', 2)
-                config[k] = v
-            else:
-                config[k] += '\n' + line[2:]
-    apply_replacements(config)
-else:
-    config = extract_map(args)
-    apply_replacements(config)
+if __name__ == '__main__':
+    search = None
+    replace = None
+    flag_use_regexp = False
+    flag_ignore_case = False
+    flag_simulate = False
+    flag_extract_map = False
+    flag_detect = False
+    flag_diff = False
+    flag_rename_file = False
+    matching_min_length = 3
+    apply_map = None
+    flag_execute = False
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hs:S:r:itea:cl:dRx", ["help", "search=", "search-regexp=", "replace=",
+                                                                         "ignore-case", "simulate", "extract-map",
+                                                                         "apply-map=", "case", "min-matching-length=",
+                                                                         "diff", "rename", "execute"])
+    except getopt.GetoptError:
+        usage(2)
+
+    if len(opts) == 0:
+        usage()
+
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+        if o in ("-s", "--search"):
+            search = a
+        if o in ("-r", "--replace"):
+            replace = a
+        if o in ("-S", "--search-regexp"):
+            search = a
+            flag_use_regexp = True
+        if o in ("-i", "--ignore-case"):
+            flag_ignore_case = True
+        if o in ("-t", "--simulate"):
+            flag_simulate = True
+        if o in ("-d", "--diff"):
+            flag_simulate = True
+            flag_diff = True
+        if o in ("-e", "--extract-map"):
+            flag_extract_map = True
+        if o in ("-a", "--apply-map"):
+            apply_map = a
+        if o in ("-c", "--case"):
+            flag_detect = True
+        if o in ("-R", "--rename"):
+            flag_rename_file = True
+        if o in ("-x", "--execute"):
+            flag_execute = True
+        if o in ("-l", "--min-matching-length"):
+            matching_min_length = int(a)
+
+    if flag_extract_map and flag_simulate:
+        error("setting option --simulate makes no sense with option --extract-map")
+
+    if flag_extract_map and apply_map:
+        error("--extract-map and --apply-map option are mutually exclusives")
+
+    if flag_extract_map and (search is None or replace is None):
+        error("setting option --extract-map implies to set options --search and --replace")
+
+    if (apply_map is None) and (search is None or replace is None):
+        error("--search and --replace are required when --apply-map is not used")
+
+
+    if len(args) == 0:
+        args = ["-"]
+
+    args = [op(x) for x in args]
+
+
+    if flag_extract_map:
+        replacements = extract_map(args)
+        for replacement in replacements:
+            print(replacement, write_multiline(replacements[replacement]), sep=' => ')
+    elif apply_map is not None:
+        config = {}
+        with open(apply_map, 'rt') as fd:
+            flag_use_regexp = None
+            for line in fd:
+                line = line.strip()
+                if not line.startswith("| "):
+                    (k, v) = line.split(' => ', 2)
+                    config[k] = v
+                else:
+                    config[k] += '\n' + line[2:]
+        apply_replacements(config)
+    else:
+        config = extract_map(args)
+        apply_replacements(config)
