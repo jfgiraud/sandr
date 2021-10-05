@@ -10,7 +10,7 @@ usage:
 
 env: tests/requirements.txt
 	test -d env || python3 -m venv env
-	test -f env/bin/activate || source env/bin/activate
+	source env/bin/activate
 	pip3 install -Ur tests/requirements.txt
 
 tests/bash_unit:
@@ -19,7 +19,7 @@ tests/bash_unit:
 
 .PHONY: test_py
 test_py: env
-	test -f env/bin/activate || source env/bin/activate
+	source env/bin/activate
 	python3 -m pytest tests/
 
 .PHONY: test_sh
