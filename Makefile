@@ -10,8 +10,8 @@ usage:
 
 env: tests/requirements.txt
 	test -d env || python3 -m venv env
-	source env/bin/activate
-	pip install -Ur tests/requirements.txt
+	test -f env/bin/activate || source env/bin/activate
+	pip3 install -Ur tests/requirements.txt
 
 tests/bash_unit:
 	curl -s https://raw.githubusercontent.com/pgrange/bash_unit/master/bash_unit -o tests/bash_unit
@@ -19,9 +19,7 @@ tests/bash_unit:
 
 .PHONY: test_py
 test_py: env
-	ls env/
-	ls env/bin/
-	source env/bin/activate
+	test -f env/bin/activate || source env/bin/activate
 	python3 -m pytest tests/
 
 .PHONY: test_sh
