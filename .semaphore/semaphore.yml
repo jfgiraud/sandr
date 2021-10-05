@@ -22,7 +22,7 @@ blocks:
             - cache restore
             - python3 -m venv --without-pip env
             - source env/bin/activate
-            - pip3 download -Ur tests/requirements.txt --cache-dir .pip_cache
+            - pip3 download -r tests/requirements.txt --cache-dir .pip_cache
             - cache store
   - name: "Run Tests"
     task:
