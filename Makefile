@@ -18,6 +18,7 @@ test_py: env
 
 .PHONY: test_sh
 test_sh:
+	curl https://raw.githubusercontent.com/pgrange/bash_unit/master/bash_unit -o tests/bash_unit
 	tests/bash_unit tests/test_ft.sh
 
 .PHONY: test
