@@ -22,7 +22,6 @@ blocks:
             - cache restore
             - python3 -m venv --without-pip env
             - source env/bin/activate
-            - python3 -m ensurepip --upgrade
             - pip3 install -Ur tests/requirements.txt
             - cache store
   - name: "Run Tests"
