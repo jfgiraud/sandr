@@ -12,4 +12,4 @@ blocks:
           commands:
             - sem-version python 3.7
             - checkout
-            - make test
+            - make clean test
