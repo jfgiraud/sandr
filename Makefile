@@ -10,6 +10,7 @@ usage:
 
 env: tests/requirements.txt
 	test -d env || python3 -m venv env
+	source env/bin/activate
 	pip install -Ur tests/requirements.txt
 
 tests/bash_unit:
