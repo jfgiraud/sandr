@@ -19,6 +19,8 @@ tests/bash_unit:
 
 .PHONY: test_py
 test_py: env
+	ls env/
+	ls env/bin/
 	source env/bin/activate
 	python3 -m pytest tests/
 
