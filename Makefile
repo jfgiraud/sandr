@@ -18,7 +18,7 @@ tests/bash_unit:
 
 .PHONY: test_py
 test_py: env
-	env/bin/python3 -m pytest tests/
+	python3 -m pytest tests/
 
 .PHONY: test_sh
 test_sh: tests/bash_unit
