@@ -1,6 +1,6 @@
 # sandr
 
-[![Build Status](https://jfgiraud.semaphoreci.com/badges/sandr/branches/master.svg?style=shields)](https://jfgiraud.semaphoreci.com/projects/sandr)
+[![Build Status](https://jfgiraud.semaphoreci.com/badges/sandr/branches/master.svg)](https://jfgiraud.semaphoreci.com/projects/sandr)
 
 ### Description
 
