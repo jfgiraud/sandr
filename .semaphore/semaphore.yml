@@ -10,7 +10,8 @@ blocks:
       jobs:
         - name: test
           commands:
-            - whoami
+            - sem-version python 3.7
             - checkout
-            - sudo apt -y install python3-venv
+            - python -m pip install --upgrade pip
+            - pip install pytest
             - make test
