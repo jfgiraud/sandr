@@ -20,7 +20,7 @@ blocks:
           commands:
             - checkout
             - make .pip_cache
-            - cache store cached-dir .pip_cache
+            - cache store cached-dir .pip_cache/*
             - env
   - name: "Run Tests"
     task:
@@ -34,4 +34,5 @@ blocks:
             - make test_sh
         - name: Unit tests
           commands:
+            - cache restore cached-dir
             - make test_py
