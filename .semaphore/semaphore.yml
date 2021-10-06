@@ -19,17 +19,15 @@ blocks:
         - name: pip
           commands:
             - checkout
-            - cache restore
             - make .pip_cache
-            - cache store
+            - cache store cached-dir .pip_cache
             - env
   - name: "Run Tests"
     task:
       prologue:
         commands:
           - checkout
-          - mkdir -p .pip_cache
-          - cache restore
+          - cache restore cached-dir
       jobs:
         - name: Functional tests
           commands:
