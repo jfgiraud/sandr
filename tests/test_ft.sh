@@ -69,7 +69,7 @@ function suppress_color() {
   sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g'
 }
 
-function test_use_map_b() {
+function test_use_map_with_newlines() {
   map=$(mktemp)
   cat > $map <<EOF
 a => Ceci est une phrase
