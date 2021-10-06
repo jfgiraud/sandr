@@ -20,7 +20,7 @@ blocks:
           commands:
             - checkout
             - make .pip_cache
-            - cache store cached-dir .pip_cache/*
+            - cache store cached-dir .pip_cache
             - env
   - name: "Run Tests"
     task:
