@@ -57,18 +57,6 @@ EOF
   rm -f $map
 }
 
-function test_use_map_multiline() {
-  map=$(mktemp)
-  cat > $map <<EOF
-a => Ceci est une phrase
-| sur 2 lignes
-b => Et celle-ci une autre phrase sur une ligne
-EOF
-  actual=$(echo "ab" | $ROOTDIR/bin/sandr.py -a $map | tr '\n' '#')
-  assert_equals "Ceci est une phrase#sur 2 lignesEt celle-ci une autre phrase sur une ligne#" "$actual" "bad substitution"
-  rm -f $map
-}
-
 function test_simulate_replacements() {
   map=$(mktemp)
   echo 'Hello john doe' > $map
@@ -79,6 +67,18 @@ function test_simulate_replacements() {
 
 function suppress_color() {
   sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g'
+}
+
+function test_use_map_multiline() {
+  map=$(mktemp)
+  cat > $map <<EOF
+a => Ceci est une phrase
+| sur 2 lignes
+b => Et celle-ci une autre phrase sur une ligne
+EOF
+  actual=$(echo "ab" | $ROOTDIR/bin/sandr.py -a $map | tr '\n' '#')
+  assert_equals "Ceci est une phrase#sur 2 lignesEt celle-ci une autre phrase sur une ligne#" "$actual" "bad substitution"
+  rm -f $map
 }
 
 function test_simulate_and_view_replacements() {
