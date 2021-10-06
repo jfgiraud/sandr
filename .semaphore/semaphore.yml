@@ -24,7 +24,9 @@ blocks:
             - ls -l .pip_cache
             - echo $SEMAPHORE_CACHE_DIR
             - export SEMAPHORE_CACHE_DIR=".pip_cache"
+            - cache list
             - cache store
+            - cache list
             - ls -la
   - name: "Run Tests"
     task:
