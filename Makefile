@@ -16,6 +16,7 @@ usage:
 	python3 -m pip install --no-index --find-links .pip_cache -r tests/requirements.txt
 
 env/bin/activate:
+	locate python3
 	test -d env || python3 -m venv env
 
 tests/bash_unit:
