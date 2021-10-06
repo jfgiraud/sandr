@@ -21,13 +21,7 @@ blocks:
             - checkout
             - cache restore
             - make .pip_cache
-            - ls -l .pip_cache
-            - echo $SEMAPHORE_CACHE_DIR
-            - export SEMAPHORE_CACHE_DIR=".pip_cache"
-            - cache list
             - cache store
-            - cache list
-            - ls -la
             - env
   - name: "Run Tests"
     task:
