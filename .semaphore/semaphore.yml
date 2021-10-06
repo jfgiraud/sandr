@@ -27,6 +27,7 @@ blocks:
       prologue:
         commands:
           - checkout
+          - mkdir -p .pip_cache
           - cache restore
       jobs:
         - name: Functional tests
