@@ -8,17 +8,22 @@ usage:
 		* test: run all tests
 	EOF
 
-env: tests/requirements.txt
-	test -d env || python3 -m venv env
+
+.pip_cache: env/bin/activate
 	source env/bin/activate
-	pip3 install -Ur tests/requirements.txt
+	mkdir -p .pip_cache
+	pip download -r tests/requirements.txt -d .pip_cache
+#	pip install -r tests/requirements.txt .pip_cache/
+
+env/bin/activate:
+	test -d env || python3 -m venv --without-pip env
 
 tests/bash_unit:
 	curl -s https://raw.githubusercontent.com/pgrange/bash_unit/master/bash_unit -o tests/bash_unit
 	chmod +x tests/bash_unit
 
 .PHONY: test_py
-test_py: env
+test_py: env/bin/activate
 	source env/bin/activate
 	python3 -m pytest tests/
 
@@ -31,4 +36,4 @@ test: test_py test_sh
 
 .PHONY: clean
 clean:
-	rm -f tests/bash_unit
+	rm -rf tests/bash_unit .pip_cache *.whl

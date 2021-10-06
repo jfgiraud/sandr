@@ -20,9 +20,7 @@ blocks:
           commands:
             - checkout
             - cache restore
-            - python3 -m venv --without-pip env
-            - source env/bin/activate
-            - pip3 download -r tests/requirements.txt --cache-dir .pip_cache
+            - make .pip_cache
             - cache store
   - name: "Run Tests"
     task:
@@ -36,7 +34,4 @@ blocks:
             - make test_sh
         - name: Unit tests
           commands:
-            - python3 -m venv --without-pip env
-            - source env/bin/activate
-            - pip3 install -r tests/requirements.txt --cache-dir .pip_cache
             - make test_py
