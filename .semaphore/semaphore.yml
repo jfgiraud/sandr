@@ -28,6 +28,7 @@ blocks:
             - cache store
             - cache list
             - ls -la
+            - env
   - name: "Run Tests"
     task:
       prologue:
