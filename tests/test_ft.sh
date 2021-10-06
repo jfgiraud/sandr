@@ -57,7 +57,7 @@ EOF
   rm -f $map
 }
 
-function test_use_map_multiline() {
+function test_multiline() {
   map=$(mktemp)
   cat > $map <<EOF
 a => Ceci est une phrase
