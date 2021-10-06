@@ -29,7 +29,7 @@ test_py: .pip_cache
 
 .PHONY: test_sh
 test_sh: tests/bash_unit
-	bash -x tests/bash_unit tests/test_ft.sh
+	tests/bash_unit tests/test_ft.sh
 
 .PHONY: test
 test: test_py test_sh
