@@ -7,19 +7,8 @@ agent:
 global_job_config:
   prologue:
     commands:
-      - sem-version python 3.9
-      - sudo apt-get update
-      - sudo apt-get install -y python3.9-venv
       - checkout
 blocks:
-  - name: "Download Dependencies"
-    task:
-      jobs:
-        - name: pip
-          commands:
-            - cache clear
-            - make .pip_cache
-            - cache store cached-dir .pip_cache
   - name: "Run Tests"
     task:
       jobs:
@@ -28,6 +17,7 @@ blocks:
             - make test_sh
         - name: Unit tests
           commands:
-            - cache restore cached-dir
-            - ls -l .pip_cache
+            - sem-version python 3.9
+            - sudo apt-get update
+            - sudo apt-get install -y python3.9-venv
             - make test_py
