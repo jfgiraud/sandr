@@ -28,6 +28,7 @@ blocks:
         commands:
           - checkout
           - cache restore
+          - ls .pip_cache
       jobs:
         - name: Functional tests
           commands:
