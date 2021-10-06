@@ -8,28 +8,20 @@ global_job_config:
   prologue:
     commands:
       - sem-version python 3.9
+      - sudo apt-get update
+      - sudo apt-get install -y python3.9-venv
+      - checkout
 blocks:
-  - name: "Install Dependencies"
+  - name: "Download Dependencies"
     task:
-      prologue:
-        commands:
-          - sudo apt-get update
-          - sudo apt-get install -y python3.9-venv
       jobs:
         - name: pip
           commands:
-            - checkout
             - cache clear
             - make .pip_cache
             - cache store cached-dir .pip_cache
-            - env
-            - ls -l .pip_cache
   - name: "Run Tests"
     task:
-      prologue:
-        commands:
-          - checkout
-          - cache restore cached-dir
       jobs:
         - name: Functional tests
           commands:
