@@ -22,7 +22,7 @@ blocks:
             - cache restore
             - make .pip_cache
             - ls -l .pip_cache
-            - echo $SEMAPHORE_LOCAL_CACHE_PATHS
+            - export SEMAPHORE_LOCAL_CACHE_PATHS=".pip_cache"
             - cache store
   - name: "Run Tests"
     task:
