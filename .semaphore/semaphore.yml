@@ -21,6 +21,7 @@ blocks:
             - checkout
             - cache restore
             - make .pip_cache
+            - locate *.whl
             - cache store
   - name: "Run Tests"
     task:
