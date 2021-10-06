@@ -13,7 +13,6 @@ usage:
 	source env/bin/activate
 	mkdir -p .pip_cache
 	python -m pip download -r tests/requirements.txt -d .pip_cache
-	python -m pip install --no-index --find-links .pip_cache -r tests/requirements.txt
 
 env/bin/activate:
 	test -d env || python3 -m venv env
@@ -25,6 +24,7 @@ tests/bash_unit:
 .PHONY: test_py
 test_py: .pip_cache
 	source env/bin/activate
+	python -m pip install --no-index --find-links .pip_cache -r tests/requirements.txt
 	python3 -m pytest tests/
 
 .PHONY: test_sh
