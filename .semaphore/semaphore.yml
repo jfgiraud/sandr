@@ -19,6 +19,7 @@ blocks:
         - name: pip
           commands:
             - checkout
+            - cache clear
             - make .pip_cache
             - cache store cached-dir .pip_cache
             - env
