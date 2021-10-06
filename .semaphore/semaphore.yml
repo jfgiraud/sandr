@@ -23,6 +23,7 @@ blocks:
             - make .pip_cache
             - cache store cached-dir .pip_cache
             - env
+            - ls -l .pip_cache
   - name: "Run Tests"
     task:
       prologue:
@@ -36,4 +37,5 @@ blocks:
         - name: Unit tests
           commands:
             - cache restore cached-dir
+            - ls -l .pip_cache
             - make test_py
