@@ -14,6 +14,7 @@ import difflib
 import subprocess
 import shlex
 
+
 # python sandr.py -e -S '((\w+)jour)' -r 'helLO\1' -i aaa
 # python sandr.py -e -s BONjour -r helLO -i aaa
 # bug python sandr.py -e -s '((\w+)jour)' -r 'helLO\1' -i aaa
@@ -22,42 +23,46 @@ import shlex
 def usage(retval=0):
     print('''NAME:
 
-        %(prog)s - perform pattern replacement in files
+        %(program)s - perform pattern replacement in files
 
 SYNOPSYS:
 
-        %(prog)s
+        %(program)s
              -h, --help                 display help
              -s, --search               the string to search
              -S, --search-regexp        the pattern to search
              -r, --replace              the string (or the pattern) used to replace all matches 
-             -e, --extract-map          extract from file or standart input all matches of searched
+             -e, --extract-map          extract from file or standard input all matches of searched
                                         string or pattern.
-                                        a map created with found matches is displayed on standart 
-                                        output. entries of this map will be setted with a default
+                                        a map created with found matches is displayed on standard 
+                                        output. entries of this map will be set with a default
                                         value
-             -i, --ignore-case          search ingoring case
+             -i, --ignore-case          search ignoring case
              -a, --apply-map            use a file containing the map to perform replacement
              -c, --case                 apply transformations to try to keep the same case after 
-                                        replacement (usefull with -i option)
+                                        replacement (useful with -i option)
              -l, --min-matching-length  for case transformations, ignore matching group when the
                                         size is less than de specified value (default 3)
              -t, --simulate             perform a simulation for replacements
-                                        the results will be displayed on standart output
+                                        the results will be displayed on standard output
              -d, --diff                 compare files before and after replacements
              -R, --rename               rename files if path matches searched string or pattern
+             -x, --execute              execute a command and replace with the result. the command
+                                        is a pattern.
         
 With no FILE, or when FILE is -, read standard input.
 
 AUTHOR
-	Written by Jean-François Giraud.
+    
+    Written by Jean-François Giraud.
 
 COPYRIGHT
-	Copyright (c) 2012-2014 Jean-François Giraud.  
-	License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
-	This is free software: you are free to change and redistribute it.  
-	There is NO WARRANTY, to the extent permitted by law.
-    ''' % {'prog': os.path.basename(sys.argv[0])})
+
+    Copyright (c) 2012-2014 Jean-François Giraud.  
+    License GPLv3+: GNU GPL version 3 or later <https://www.gnu.org/licenses/gpl-3.0.html>.
+    This is free software: you are free to change and redistribute it.  
+    There is NO WARRANTY, to the extent permitted by law.
+''' % {'program': os.path.basename(sys.argv[0])})
     sys.exit(retval)
 
 
@@ -66,12 +71,12 @@ def error(message):
     sys.exit(1)
 
 
-def extract(fd):
+def extract(file_object):
     found = set()
-    reflags = re.I if flag_ignore_case else 0
-    pattern = re.compile(search if flag_use_regexp else re.escape(search), reflags)
-    for line in fd:
-        found.update([m.group(0) for m in pattern.finditer(line)])
+    re_flags = re.I if flag_ignore_case else 0
+    pattern = re.compile(search if flag_use_regexp else re.escape(search), re_flags)
+    for a_line in file_object:
+        found.update([m.group(0) for m in pattern.finditer(a_line)])
     return found
 
 
@@ -81,32 +86,36 @@ colors = {'old-value': '\033[1;31m',
           'reset': '\033[0;m'}
 
 
-def colorize_value(v, color_name):
+def colorize_value(text, color_name):
     color = colors[color_name]
     if color:
-        return '%s%s%s' % (colors[color_name], v, colors['reset'])
+        return '%s%s%s' % (colors[color_name], text, colors['reset'])
     else:
-        return v
+        return text
 
 
 def colorize(old, new):
     res = ss(old, new, d=matching_min_length)
     s = ''
-    for a, b in zip(res[0], res[1]):
-        cra, crb = a.endswith('\n'), b.endswith('\n')
-        a, b = a.rstrip('\n'), b.rstrip('\n')
-        if a != b:
-            s += '%s%s%s%s%s%s%s' % (colorize_value('{', 'box'), colorize_value(a, 'old-value'),  ('\n' if cra else ''),
-                                 colorize_value('=>', 'box'),
-                                 colorize_value(b, 'new-value'), ('\n' if crb else ''), colorize_value('}', 'box'))
+    for part_a, part_b in zip(res[0], res[1]):
+        cra, crb = part_a.endswith('\n'), part_b.endswith('\n')
+        part_a, part_b = part_a.rstrip('\n'), part_b.rstrip('\n')
+        if part_a != part_b:
+            s += '%s%s%s%s%s%s%s' % (colorize_value('{', 'box'),
+                                     colorize_value(part_a, 'old-value'),
+                                     ('\n' if cra else ''),
+                                     colorize_value('=>', 'box'),
+                                     colorize_value(part_b, 'new-value'),
+                                     ('\n' if crb else ''),
+                                     colorize_value('}', 'box'))
         else:
-            s += a
+            s += part_a
     return s
-    
+
 
 def apply_on_file(file, pattern, repl):
     (use_stdout_ori, filename) = file
-    use_stdout = use_stdout_ori 
+    use_stdout = use_stdout_ori
     move = False
     with open(filename, 'rt') as fd_in:
         if use_stdout or flag_simulate:
@@ -135,7 +144,8 @@ def apply_on_file(file, pattern, repl):
         if filename != renamed_filename:
             move = True
             if flag_diff:
-                print('File %s will be renamed to %s (%s)' % (filename, renamed_filename, colorize(filename, renamed_filename)), file=sys.stderr)
+                print('File %s will be renamed to %s (%s)' % (
+                    filename, renamed_filename, colorize(filename, renamed_filename)), file=sys.stderr)
         else:
             renamed_filename = None
     if not flag_simulate and move:
@@ -157,7 +167,7 @@ def ss(x, y, f=None, d=3):
     i1, j1 = 0, 0
     res = [[], []]
     while opts:
-        i2, j2, size = opts.pop(0) 
+        i2, j2, size = opts.pop(0)
         if size == 0:
             if x[i1:] and y[j1:]:
                 res[0].append(x[i1:])
@@ -167,10 +177,10 @@ def ss(x, y, f=None, d=3):
             continue
         res[0].append(x[i1:i2])
         res[1].append(y[j1:j2])
-        res[0].append(x[i2:i2+size])
-        res[1].append(y[j2:j2+size])
-        i1 = i2+size
-        j1 = j2+size
+        res[0].append(x[i2:i2 + size])
+        res[1].append(y[j2:j2 + size])
+        i1 = i2 + size
+        j1 = j2 + size
     return res
 
 
@@ -192,7 +202,7 @@ def same_case(x, y, d=3):
 
 def extract_map(files):
     extracted = set()
-    reflags = re.I if flag_ignore_case else 0
+    re_flags = re.I if flag_ignore_case else 0
     for _, file in files:
         with open(file, 'rt') as fd_in:
             extracted.update(extract(fd_in))
@@ -203,12 +213,12 @@ def extract_map(files):
         if type(match) == tuple:
             match = match[0]
         if flag_use_regexp:
-            to_replace = re.sub(search, replace, match, flags=reflags)
+            to_replace = re.sub(search, replace, match, flags=re_flags)
             if flag_detect:
                 to_replace = same_case(match, to_replace, d=matching_min_length)
             replacements[match] = to_replace
         else:
-            to_replace = re.sub(re.escape(search), replace, match, flags=reflags)
+            to_replace = re.sub(re.escape(search), replace, match, flags=re_flags)
             if flag_detect:
                 to_replace = same_case(match, to_replace, d=matching_min_length)
             replacements[match] = to_replace
@@ -216,11 +226,11 @@ def extract_map(files):
 
 
 def create_tmp_and_init(fd_in):
-    (fno, newfile) = tempfile.mkstemp()
+    (fno, absolute_path) = tempfile.mkstemp()
     with open(fno, 'wt') as fd_out:
         for line in fd_in:
             fd_out.write(line)
-    return newfile
+    return absolute_path
 
 
 def op(filename):
@@ -261,9 +271,9 @@ if __name__ == '__main__':
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hs:S:r:itea:cl:dRx", ["help", "search=", "search-regexp=", "replace=",
-                                                                         "ignore-case", "simulate", "extract-map",
-                                                                         "apply-map=", "case", "min-matching-length=",
-                                                                         "diff", "rename", "execute"])
+                                                                        "ignore-case", "simulate", "extract-map",
+                                                                        "apply-map=", "case", "min-matching-length=",
+                                                                        "diff", "rename", "execute"])
     except getopt.GetoptError:
         usage(2)
 
@@ -312,12 +322,10 @@ if __name__ == '__main__':
     if (apply_map is None) and (search is None or replace is None):
         error("--search and --replace are required when --apply-map is not used")
 
-
     if len(args) == 0:
         args = ["-"]
 
     args = [op(x) for x in args]
-
 
     if flag_extract_map:
         replacements = extract_map(args)

@@ -96,3 +96,5 @@ function test_simulate_and_view_replacements_renaming_file() {
   assert_equals "{Hello=>bye} john doe#File /tmp/hello_john_doe.txt will be renamed to /tmp/bye_john_doe.txt (/tmp/{hello=>bye}_john_doe.txt)#" "$actual" "bad substitution"
   rm -f $map
 }
+
+#https://pastebin.com/raw/2bLUvFKZ
