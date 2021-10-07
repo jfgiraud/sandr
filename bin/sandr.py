@@ -200,7 +200,7 @@ def same_case(x, y, d=3):
     return w
 
 
-def extract_map(files):
+def extract_replacements_from_files(files):
     extracted = set()
     re_flags = re.I if flag_ignore_case else 0
     for _, file in files:
@@ -244,15 +244,29 @@ def op(filename):
                 return False, filename
 
 
-def apply_replacements(config):
-    pattern = '|'.join(map(re.escape, sorted(config, reverse=True)))
-    repl = lambda matchobj: config[matchobj.group(0)]
-    for file in args:
-        apply_on_file(file, pattern, repl)
+def apply_replacements(replacements, files):
+    pattern = '|'.join(map(re.escape, sorted(replacements, reverse=True)))
+    for file in files:
+        apply_on_file(file, pattern, lambda matchobj: replacements[matchobj.group(0)])
 
 
 def write_multiline(s):
     return s.replace('\n', '\n| ')
+
+
+def read_replacements_in_file(file):
+    global flag_use_regexp
+    config = {}
+    with open(file, 'rt') as fd:
+        flag_use_regexp = None
+        for line in fd:
+            line = line.strip()
+            if not line.startswith("| "):
+                (k, v) = line.split(' => ', 2)
+                config[k] = v
+            else:
+                config[k] += '\n' + line[2:]
+    return config
 
 
 if __name__ == '__main__':
@@ -325,24 +339,18 @@ if __name__ == '__main__':
     if len(args) == 0:
         args = ["-"]
 
-    args = [op(x) for x in args]
+    files = [op(x) for x in args]
 
     if flag_extract_map:
-        replacements = extract_map(args)
+        replacements = extract_replacements_from_files(files)
         for replacement in replacements:
             print(replacement, write_multiline(replacements[replacement]), sep=' => ')
     elif apply_map is not None:
-        config = {}
-        with open(apply_map, 'rt') as fd:
-            flag_use_regexp = None
-            for line in fd:
-                line = line.strip()
-                if not line.startswith("| "):
-                    (k, v) = line.split(' => ', 2)
-                    config[k] = v
-                else:
-                    config[k] += '\n' + line[2:]
-        apply_replacements(config)
+        apply_replacements(read_replacements_in_file(apply_map), files)
     else:
-        config = extract_map(args)
-        apply_replacements(config)
+        apply_replacements(extract_replacements_from_files(files), files)
+
+    for is_tmp, filepath in files:
+        if is_tmp:
+            os.remove(filepath)
+
