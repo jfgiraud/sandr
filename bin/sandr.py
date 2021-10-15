@@ -272,6 +272,7 @@ class Config:
         self.matching_min_length = 3
         self.apply_map = None
         self.flag_execute = False
+        self.files = []
 
     def parse(self, arguments):
         try:
@@ -317,24 +318,12 @@ class Config:
                 self.matching_min_length = int(a)
             if len(args) == 0:
                 args = ["-"]
-        return [self.op(x) for x in args]
+        self.files = args
 
-    def create_tmp_and_init(self, fd_in):
-        (fno, absolute_path) = tempfile.mkstemp()
-        with open(fno, 'wt') as fd_out:
-            for line in fd_in:
-                fd_out.write(line)
-        return absolute_path
+    def get_files(self):
+        return self.files
 
-    def op(self, filename):
-        if filename == '-':
-            return True, self.create_tmp_and_init(sys.stdin)
-        else:
-            with open(filename, 'rt') as fd_in:
-                if stat.S_ISFIFO(os.fstat(fd_in.fileno()).st_mode):
-                    return True, self.create_tmp_and_init(fd_in)
-                else:
-                    return False, filename
+
 
     def validate(self):
         if self.flag_extract_map and self.flag_simulate:
@@ -347,20 +336,50 @@ class Config:
             error("--search and --replace are required when --apply-map is not used")
 
 
-if __name__ == '__main__':
+def create_tmp_and_init(fd_in):
+    (fno, absolute_path) = tempfile.mkstemp()
+    with open(fno, 'wt') as fd_out:
+        for line in fd_in:
+            fd_out.write(line)
+    return absolute_path
 
-    config = Config()
-    files = config.parse(sys.argv[1:])
-    config.validate()
 
-    if config.flag_extract_map:
-        print_replacement(extract_replacements_from_files(files))
-    elif config.apply_map is not None:
-        apply_replacements(read_replacements_in_file(config.apply_map), files)
+def op(filename):
+    if filename == '-':
+        return True, create_tmp_and_init(sys.stdin)
     else:
-        apply_replacements(extract_replacements_from_files(files), files)
+        with open(filename, 'rt') as fd_in:
+            if stat.S_ISFIFO(os.fstat(fd_in.fileno()).st_mode):
+                return True, create_tmp_and_init(fd_in)
+            else:
+                return False, filename
 
+
+def as_real_files(files):
+    return [op(x) for x in files]
+
+
+def close_files(files):
     for is_tmp, filepath in files:
         if is_tmp:
             os.remove(filepath)
+
+
+if __name__ == '__main__':
+
+    config = Config()
+    config.parse(sys.argv[1:])
+    config.validate()
+
+    paths = as_real_files(config.get_files())
+
+    if config.flag_extract_map:
+        print_replacement(extract_replacements_from_files(paths))
+    elif config.apply_map is not None:
+        apply_replacements(read_replacements_in_file(config.apply_map), paths)
+    else:
+        apply_replacements(extract_replacements_from_files(paths), paths)
+
+    close_files(paths)
+
 
