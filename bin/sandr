@@ -259,9 +259,6 @@ def extract_replacements_from_files(files):
     return replacements
 
 
-
-
-
 def apply_replacements(replacements, files):
     pattern = '|'.join(map(re.escape, sorted(replacements, reverse=True)))
     for file in files:
@@ -269,7 +266,7 @@ def apply_replacements(replacements, files):
 
 
 def read_replacements_in_file(file):
-    config = {}
+    a_config = {}
     with open(file) as fd:
         k = ''
         v = ''
@@ -278,7 +275,7 @@ def read_replacements_in_file(file):
             if not line:
                 continue
             if line == '---':
-                config[k] = v
+                a_config[k] = v
                 k, v = '', ''
             elif line.startswith('-'):
                 if k:
@@ -292,9 +289,8 @@ def read_replacements_in_file(file):
                 raise Exception("Bad format!")
         else:
             if k and v:
-                config[k] = v
-    #print(config, file=sys.stderr)
-    return config
+                a_config[k] = v
+    return a_config
 
 
 def print_replacement(replacements):
@@ -304,6 +300,7 @@ def print_replacement(replacements):
         for v in replacements[replacement].split('\n'):
             print('+', v, sep='')
         print('---')
+
 
 class Config:
 
@@ -324,6 +321,7 @@ class Config:
         self.files = []
 
     def parse(self, arguments):
+        opts, args = [], []
         try:
             opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRxm",
                                        ["help", "search=", "search-regexp=", "replace=",
@@ -373,8 +371,6 @@ class Config:
 
     def get_files(self):
         return self.files
-
-
 
     def validate(self):
         if self.flag_extract_map and self.flag_simulate:
