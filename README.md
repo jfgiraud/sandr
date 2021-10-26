@@ -44,13 +44,22 @@ H<e>ll<o> J<o>hn D<O><E>
 ```
 
 #### use option `-e` to extract a replacements map witch can be reused later
+
 ```
 $ echo 'Hello John DOE' | sandr -e -i -c -S '([aeiouy])' -r'<\1>' > map
 $ cat map
-e => <e>
-E => <E>
-o => <o>
-O => <O>
+-E
++<E>
+---
+-O
++<O>
+---
+-e
++<e>
+---
+-o
++<o>
+---
 ```
 
 #### use option `-a` to apply a replacements map on files or standard streams
@@ -58,11 +67,56 @@ O => <O>
 The given map can be handwritten or generated with the `-e` option.
 ```
 $ cat map
-Hello => Bonjour
-DOE => Durand
+-Hello
++Bonjour
+---
+-DOE
++Durand
+---
 $ echo 'Hello John DOE' | sandr -a map
 Bonjour John Durand
 ```
+
+#### use option `-m` to toggle on the multiline mode
+
+You can use `\n` in patterns and keys of the map
+
+```
+$ printf 'Key:abc\nValue:def\nKey:ghi\nValue:klm\n' | ./bin/sandr -m -S 'Key:([a-z]+)\nValue:([a-z]+)' -r '\1-\2' -e > map
+$ cat map
+-Key:abc
+-Value:def
++abc-def
+---
+-Key:ghi
+-Value:klm
++ghi-klm
+---
+```
+
+The map can also contain multiline values
+
+```
+$ cat map
+-a
++X
++X
+---
+-b
++Y
+---
+-c
++Z
++Z
++Z
+$ echo "abc" | ./bin/sandr -a map
+X
+XYZ
+Z
+Z
+```
+
+
 
 #### use option `-t` to simulate replacements
 ```
