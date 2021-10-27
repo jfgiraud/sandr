@@ -82,7 +82,7 @@ Bonjour John Durand
 You can use `\n` in patterns and keys of the map
 
 ```
-$ printf 'Key:abc\nValue:def\nKey:ghi\nValue:klm\n' | ./bin/sandr -m -S 'Key:([a-z]+)\nValue:([a-z]+)' -r '\1-\2' -e > map
+$ printf 'Key:abc\nValue:def\nKey:ghi\nValue:klm\n' | sandr -m -S 'Key:([a-z]+)\nValue:([a-z]+)' -r '\1-\2' -e > map
 $ cat map
 -Key:abc
 -Value:def

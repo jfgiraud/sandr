@@ -1,18 +1,16 @@
 #!/usr/bin/python3 -u
 
-import difflib
 import getopt
 import os
 import os.path
 import re
 import sys
-import io
 import tempfile
 import shutil
 import stat
 import difflib
-import subprocess
 import shlex
+import subprocess
 
 
 # python sandr.py -e -S '((\w+)jour)' -r 'helLO\1' -i aaa
@@ -28,28 +26,30 @@ def usage(retval=0):
 SYNOPSYS:
 
         %(program)s
-             -h, --help                 display help
-             -s, --search               the string to search
-             -S, --search-regexp        the pattern to search
-             -r, --replace              the string (or the pattern) used to replace all matches 
+             -h, --help                 Display help.
+             -s, --search               The string to search.
+             -S, --search-regexp        The pattern to search.
+             -r, --replace              The string (or the pattern) used to replace all matches .
              -e, --extract-map          extract from file or standard input all matches of searched
                                         string or pattern.
-                                        a map created with found matches is displayed on standard 
-                                        output. entries of this map will be set with a default
-                                        value
-             -i, --ignore-case          search ignoring case
-             -a, --apply-map            use a file containing the map to perform replacement
-             -c, --case                 apply transformations to try to keep the same case after 
-                                        replacement (useful with -i option)
-             -l, --min-matching-length  for case transformations, ignore matching group when the
-                                        size is less than de specified value (default 3)
-             -t, --simulate             perform a simulation for replacements
-                                        the results will be displayed on standard output
-             -d, --diff                 compare files before and after replacements
-             -m, --multiline            swith on the multiline mode
-             -R, --rename               rename files if path matches searched string or pattern
-             -x, --execute              execute a command and replace with the result. the command
-                                        is a pattern.
+                                        A map created with found matches is displayed on standard 
+                                        output. Entries of this map will be set with a default
+                                        value.
+             -i, --ignore-case          Search ignoring case.
+             -a, --apply-map            Use a file containing the map to perform replacement.
+             -c, --case                 Apply transformations to try to keep the same case after 
+                                        replacement (useful with -i option).
+             -l, --min-matching-length  For case transformations, ignore matching group when the
+                                        size is less than de specified value (default 3).
+             -t, --simulate             Perform a simulation for replacements.
+                                        the results will be displayed on standard output.
+             -d, --diff                 Compare files before and after replacements.
+             -m, --multiline            Swith on the multiline mode.
+             -R, --rename               Rename files if path matches searched string or pattern.
+             -X, --replace-str          Replace occurrences of replace-str by the replace result in the command to 
+                                        execute (default is {}).
+             -x, --execute              Execute a command by replacing replace-str with the replace result.
+                                        The output of the command replaces the previous result.
         
 With no FILE, or when FILE is -, read standard input.
 
@@ -59,7 +59,7 @@ AUTHOR
 
 COPYRIGHT
 
-    Copyright (c) 2012-2014 Jean-François Giraud.  
+    Copyright (c) 2012-2021 Jean-François Giraud.  
     License GPLv3+: GNU GPL version 3 or later <https://www.gnu.org/licenses/gpl-3.0.html>.
     This is free software: you are free to change and redistribute it.  
     There is NO WARRANTY, to the extent permitted by law.
@@ -259,10 +259,25 @@ def extract_replacements_from_files(files):
     return replacements
 
 
+def call_script(parameters_str):
+    r = ''
+    for command in config.execute_command:
+        full_command = command.replace(config.replace_str, parameters_str)
+        #p = subprocess.run(t,  text=True, capture_output=True, stdout=subprocess.PIPE)
+        #r += p.stdout
+        ps = subprocess.Popen(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        r += ps.communicate()[0].decode('utf-8')
+    return r
+
+
 def apply_replacements(replacements, files):
     pattern = '|'.join(map(re.escape, sorted(replacements, reverse=True)))
     for file in files:
-        apply_on_file(file, pattern, lambda matchobj: replacements[matchobj.group(0)])
+        if not config.flag_execute:
+            repl = lambda matchobj: replacements[matchobj.group(0)]
+        else:
+            repl = lambda matchobj: call_script(replacements[matchobj.group(0)])
+        apply_on_file(file, pattern, repl)
 
 
 def read_replacements_in_file(file):
@@ -318,16 +333,18 @@ class Config:
         self.matching_min_length = 3
         self.apply_map = None
         self.flag_execute = False
+        self.replace_str = '{}'
+        self.execute_command = []
         self.files = []
 
     def parse(self, arguments):
         opts, args = [], []
         try:
-            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRxm",
+            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRx:mX",
                                        ["help", "search=", "search-regexp=", "replace=",
                                         "ignore-case", "simulate", "extract-map",
                                         "apply-map=", "case", "min-matching-length=",
-                                        "diff", "rename", "execute", "multiline"])
+                                        "diff", "rename", "execute=", "multiline", "replace-str="])
         except getopt.GetoptError:
             usage(2)
 
@@ -361,8 +378,11 @@ class Config:
                 self.flag_rename_file = True
             if o in ("-x", "--execute"):
                 self.flag_execute = True
+                self.execute_command.append(a)
             if o in ("-m", "--multiline"):
                 self.flag_multiline = True
+            if o in ("-X", "--replace-str="):
+                self.replace_str = a
             if o in ("-l", "--min-matching-length"):
                 self.matching_min_length = int(a)
             if len(args) == 0:
@@ -373,6 +393,7 @@ class Config:
         return self.files
 
     def validate(self):
+        # TODO gérer option X && x
         if self.flag_extract_map and self.flag_simulate:
             error("setting option --simulate makes no sense with option --extract-map")
         if self.flag_extract_map and self.apply_map:
@@ -381,6 +402,8 @@ class Config:
             error("setting option --extract-map implies to set options --search and --replace")
         if (self.apply_map is None) and (self.search is None or self.replace is None):
             error("--search and --replace are required when --apply-map is not used")
+        if self.flag_extract_map and self.flag_execute:
+            error("--extract-map and --execute option are mutually exclusives")
 
 
 def create_tmp_and_init(fd_in):
