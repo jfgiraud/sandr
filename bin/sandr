@@ -66,6 +66,7 @@ COPYRIGHT
 ''' % {'program': os.path.basename(sys.argv[0])})
     sys.exit(retval)
 
+# TODO faire un man
 
 def error(message):
     print(message, file=sys.stderr)
@@ -244,18 +245,13 @@ def extract_replacements_from_files(files):
                 extracted.update(extract_string(file))
     replacements = {}
     for match in extracted:
-        if type(match) == tuple:
-            match = match[0]
-        if config.flag_use_regexp:
-            to_replace = re.sub(config.search, config.replace, match, flags=re_flags)
-            if config.flag_detect:
-                to_replace = same_case(match, to_replace, d=config.matching_min_length)
-            replacements[match] = to_replace
-        else:
-            to_replace = re.sub(re.escape(config.search), config.replace, match, flags=re_flags)
-            if config.flag_detect:
-                to_replace = same_case(match, to_replace, d=config.matching_min_length)
-            replacements[match] = to_replace
+        # if type(match) == tuple:
+        #     match = match[0]
+        handler = config.search if config.flag_use_regexp else re.escape(config.search)
+        to_replace = re.sub(handler, config.replace, match, flags=re_flags)
+        if config.flag_detect:
+            to_replace = same_case(match, to_replace, d=config.matching_min_length)
+        replacements[match] = to_replace
     return replacements
 
 
@@ -393,7 +389,8 @@ class Config:
         return self.files
 
     def validate(self):
-        # TODO gérer option X && x
+        # TODO l'option -X ne peut être positionnée qu'avec l'option -x
+        # TODO -x n'est pas compatible avec -R (exemple : on ne peut pas injecter un résultat curl dans un nom fichier par exemple)
         if self.flag_extract_map and self.flag_simulate:
             error("setting option --simulate makes no sense with option --extract-map")
         if self.flag_extract_map and self.apply_map:
