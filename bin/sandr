@@ -48,8 +48,8 @@ SYNOPSYS:
              -R, --rename               Rename files if path matches searched string or pattern.
              -X, --replace-str          Replace occurrences of replace-str by the replace result in the command to 
                                         execute (default is {}).
-             -x, --execute              Execute a command by replacing replace-str with the replace result.
-                                        The output of the command replaces the previous result.
+             -x, --execute              Execute one or more commands (replace replace-str with the result) and take the 
+                                        output as the new result. 
         
 With no FILE, or when FILE is -, read standard input.
 
@@ -66,7 +66,6 @@ COPYRIGHT
 ''' % {'program': os.path.basename(sys.argv[0])})
     sys.exit(retval)
 
-# TODO faire un man
 
 def error(message):
     print(message, file=sys.stderr)
@@ -127,7 +126,6 @@ def extract_fd(fd):
             found.update([m.group(0) for m in pattern.finditer(a_line)])
     else:
         found.update([m.group(0) for m in pattern.finditer(''.join(fd.readlines()))])
-    # print(found, file=sys.stderr)
     return found
 
 
@@ -145,32 +143,10 @@ def apply_on_file(file, pattern, repl):
         with fd_out:
             if not config.flag_multiline:
                 for line in fd_in:
-                    if pattern:
-                        old_line = line
-                        line = re.sub(pattern, repl, line)
-                        if config.flag_diff:
-                            if line != old_line:
-                                print(colorize(old_line, line), end='\n')
-                            else:
-                                print(line, end='')
-                        else:
-                            fd_out.write(line)
-                    else:
-                        fd_out.write(line)
+                    rewrite_line(fd_out, line, pattern, repl)
             else:
                 line = ''.join(fd_in.readlines())
-                if pattern:
-                    old_line = line
-                    line = re.sub(pattern, repl, line)
-                    if config.flag_diff:
-                        if line != old_line:
-                            print(colorize(old_line, line), end='\n')
-                        else:
-                            print(line, end='')
-                    else:
-                        fd_out.write(line)
-                else:
-                    fd_out.write(line)
+                rewrite_line(fd_out, line, pattern, repl)
 
     renamed_filename = None
     if not use_stdout and config.flag_rename_file and pattern:
@@ -189,6 +165,21 @@ def apply_on_file(file, pattern, repl):
             shutil.move(filename, renamed_filename)
         else:
             print('Processed: %s' % (filename,), file=sys.stderr)
+
+
+def rewrite_line(fd_out, line, pattern, repl):
+    if pattern:
+        old_line = line
+        line = re.sub(pattern, repl, line)
+        if config.flag_diff:
+            if line != old_line:
+                print(colorize(old_line, line), end='\n')
+            else:
+                print(line, end='')
+        else:
+            fd_out.write(line)
+    else:
+        fd_out.write(line)
 
 
 def ss(x, y, f=None, d=3):
@@ -269,11 +260,7 @@ def call_script(parameters_str):
 def apply_replacements(replacements, files):
     pattern = '|'.join(map(re.escape, sorted(replacements, reverse=True)))
     for file in files:
-        if not config.flag_execute:
-            repl = lambda matchobj: replacements[matchobj.group(0)]
-        else:
-            repl = lambda matchobj: call_script(replacements[matchobj.group(0)])
-        apply_on_file(file, pattern, repl)
+        apply_on_file(file, pattern, lambda matchobj: replacements[matchobj.group(0)] if not config.flag_execute else call_script(replacements[matchobj.group(0)]))
 
 
 def read_replacements_in_file(file):
@@ -329,20 +316,20 @@ class Config:
         self.matching_min_length = 3
         self.apply_map = None
         self.flag_execute = False
-        self.replace_str = '{}'
+        self.replace_str = None
         self.execute_command = []
         self.files = []
 
     def parse(self, arguments):
         opts, args = [], []
         try:
-            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRx:mX",
+            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRx:mX:",
                                        ["help", "search=", "search-regexp=", "replace=",
                                         "ignore-case", "simulate", "extract-map",
                                         "apply-map=", "case", "min-matching-length=",
                                         "diff", "rename", "execute=", "multiline", "replace-str="])
-        except getopt.GetoptError:
-            usage(2)
+        except getopt.GetoptError as e:
+            error(e)
 
         if len(opts) == 0:
             usage()
@@ -389,8 +376,6 @@ class Config:
         return self.files
 
     def validate(self):
-        # TODO l'option -X ne peut être positionnée qu'avec l'option -x
-        # TODO -x n'est pas compatible avec -R (exemple : on ne peut pas injecter un résultat curl dans un nom fichier par exemple)
         if self.flag_extract_map and self.flag_simulate:
             error("setting option --simulate makes no sense with option --extract-map")
         if self.flag_extract_map and self.apply_map:
@@ -401,6 +386,10 @@ class Config:
             error("--search and --replace are required when --apply-map is not used")
         if self.flag_extract_map and self.flag_execute:
             error("--extract-map and --execute option are mutually exclusives")
+        if self.replace_str and len(self.execute_command) == 0:
+            error("--execute is required when --replace-str is used")
+        if len(self.execute_command) >= 1 and self.flag_rename_file:
+            error("--execute and --rename are mutually exclusives")  # ex: avoid to replace filename by file content
 
 
 def create_tmp_and_init(fd_in):
@@ -438,6 +427,9 @@ if __name__ == '__main__':
     config.parse(sys.argv[1:])
     config.validate()
 
+    if len(config.execute_command) >= 1 and config.replace_str is None:
+        config.replace_str = '{}'
+
     paths = as_real_files(config.get_files())
 
     if config.flag_extract_map:
@@ -448,5 +440,3 @@ if __name__ == '__main__':
         apply_replacements(extract_replacements_from_files(paths), paths)
 
     close_files(paths)
-
-

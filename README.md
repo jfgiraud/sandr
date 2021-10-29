@@ -65,6 +65,7 @@ $ cat map
 #### use option `-a` to apply a replacements map on files or standard streams
 
 The given map can be handwritten or generated with the `-e` option.
+
 ```
 $ cat map
 -Hello
@@ -77,24 +78,7 @@ $ echo 'Hello John DOE' | sandr -a map
 Bonjour John Durand
 ```
 
-#### use option `-m` to toggle on the multiline mode
-
-You can use `\n` in patterns and keys of the map
-
-```
-$ printf 'Key:abc\nValue:def\nKey:ghi\nValue:klm\n' | sandr -m -S 'Key:([a-z]+)\nValue:([a-z]+)' -r '\1-\2' -e > map
-$ cat map
--Key:abc
--Value:def
-+abc-def
----
--Key:ghi
--Value:klm
-+ghi-klm
----
-```
-
-The map can also contain multiline values
+The map can contain multiline keys or values.
 
 ```
 $ cat map
@@ -109,6 +93,17 @@ $ cat map
 +Z
 +Z
 +Z
+```
+
+is equivalent to (python syntax) :
+
+```python
+{ 'a': 'X\n', 'b': 'Y', 'c': 'Z\nZ\nZ' }
+```
+
+So the result of the replacement is :
+
+```
 $ echo "abc" | ./bin/sandr -a map
 X
 XYZ
@@ -116,7 +111,22 @@ Z
 Z
 ```
 
+#### use option `-m` to toggle on the multiline mode
 
+You can use `\n` in patterns
+
+```
+$ printf "Hello John Doe\nAnd Jane\nDOE.\n" | ./bin/sandr -m -S '((J\w+)\s+(D\w+))' -r '\1' -e > map
+$ cat map
+-Jane
+-DOE
++Jane
++DOE
+---
+-John Doe
++John Doe
+---
+```
 
 #### use option `-t` to simulate replacements
 ```
@@ -143,3 +153,16 @@ bye_john_doe.txt   sandr
 $ cat bye_john_doe.txt 
 bye john doe
 ```
+
+#### use option `-x` to execute a command and replace the result
+
+The option is not compatible with `-R` and `-e`
+
+```
+$ printf "Hello John Doe\nAnd Jane\nDOE.\n" | ./bin/sandr -m -S '((J\w+)\s+(D\w+))' -r '\1' -x "echo -n '{}' | tr 'aeiouyAEIOUY' '*'"
+Hello J*hn D**
+And J*n*
+D**.
+```
+
+
