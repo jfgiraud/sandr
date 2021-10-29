@@ -29,7 +29,7 @@ SYNOPSYS:
              -h, --help                 Display help.
              -s, --search               The string to search.
              -S, --search-regexp        The pattern to search.
-             -r, --replace              The string (or the pattern) used to replace all matches .
+             -r, --replace              The string (or the pattern) used to replace all matches.
              -e, --extract-map          extract from file or standard input all matches of searched
                                         string or pattern.
                                         A map created with found matches is displayed on standard 
@@ -46,10 +46,9 @@ SYNOPSYS:
              -d, --diff                 Compare files before and after replacements.
              -m, --multiline            Swith on the multiline mode.
              -R, --rename               Rename files if path matches searched string or pattern.
-             -X, --replace-str          Replace occurrences of replace-str by the replace result in the command to 
-                                        execute (default is {}).
-             -x, --execute              Execute one or more commands (replace replace-str with the result) and take the 
-                                        output as the new result. 
+             -x, --execute              Execute the string (or the pattern) used to replace all matches as a command. 
+                                        Then, the output of this command replaces all matches. The trailing newline is
+                                        suppressed. 
         
 With no FILE, or when FILE is -, read standard input.
 
@@ -242,25 +241,25 @@ def extract_replacements_from_files(files):
         to_replace = re.sub(handler, config.replace, match, flags=re_flags)
         if config.flag_detect:
             to_replace = same_case(match, to_replace, d=config.matching_min_length)
-        replacements[match] = to_replace
+        replacements[match] = call_script(to_replace) if config.flag_execute else to_replace
     return replacements
 
+def chomp(x):
+    if x.endswith("\r\n"): return x[:-2]
+    if x.endswith("\n") or x.endswith("\r"): return x[:-1]
+    return x
 
-def call_script(parameters_str):
-    r = ''
-    for command in config.execute_command:
-        full_command = command.replace(config.replace_str, parameters_str)
-        #p = subprocess.run(t,  text=True, capture_output=True, stdout=subprocess.PIPE)
-        #r += p.stdout
-        ps = subprocess.Popen(full_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        r += ps.communicate()[0].decode('utf-8')
-    return r
+def call_script(command):
+    # p = subprocess.run(command, capture_output=True, stdout=subprocess.PIPE, text=True)
+    # return p.stdout
+    ps = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    return chomp(ps.communicate()[0].decode('utf-8'))
 
 
 def apply_replacements(replacements, files):
     pattern = '|'.join(map(re.escape, sorted(replacements, reverse=True)))
     for file in files:
-        apply_on_file(file, pattern, lambda matchobj: replacements[matchobj.group(0)] if not config.flag_execute else call_script(replacements[matchobj.group(0)]))
+        apply_on_file(file, pattern, lambda matchobj: replacements[matchobj.group(0)])
 
 
 def read_replacements_in_file(file):
@@ -316,18 +315,16 @@ class Config:
         self.matching_min_length = 3
         self.apply_map = None
         self.flag_execute = False
-        self.replace_str = None
-        self.execute_command = []
         self.files = []
 
     def parse(self, arguments):
         opts, args = [], []
         try:
-            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRx:mX:",
+            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRxm",
                                        ["help", "search=", "search-regexp=", "replace=",
                                         "ignore-case", "simulate", "extract-map",
                                         "apply-map=", "case", "min-matching-length=",
-                                        "diff", "rename", "execute=", "multiline", "replace-str="])
+                                        "diff", "rename", "execute", "multiline"])
         except getopt.GetoptError as e:
             error(e)
 
@@ -361,11 +358,8 @@ class Config:
                 self.flag_rename_file = True
             if o in ("-x", "--execute"):
                 self.flag_execute = True
-                self.execute_command.append(a)
             if o in ("-m", "--multiline"):
                 self.flag_multiline = True
-            if o in ("-X", "--replace-str="):
-                self.replace_str = a
             if o in ("-l", "--min-matching-length"):
                 self.matching_min_length = int(a)
             if len(args) == 0:
@@ -384,12 +378,8 @@ class Config:
             error("setting option --extract-map implies to set options --search and --replace")
         if (self.apply_map is None) and (self.search is None or self.replace is None):
             error("--search and --replace are required when --apply-map is not used")
-        if self.flag_extract_map and self.flag_execute:
-            error("--extract-map and --execute option are mutually exclusives")
-        if self.replace_str and len(self.execute_command) == 0:
-            error("--execute is required when --replace-str is used")
-        if len(self.execute_command) >= 1 and self.flag_rename_file:
-            error("--execute and --rename are mutually exclusives")  # ex: avoid to replace filename by file content
+        if self.apply_map and self.flag_execute:
+            error("--apply-map and --execute option are mutually exclusives")
 
 
 def create_tmp_and_init(fd_in):
@@ -426,9 +416,6 @@ if __name__ == '__main__':
     config = Config()
     config.parse(sys.argv[1:])
     config.validate()
-
-    if len(config.execute_command) >= 1 and config.replace_str is None:
-        config.replace_str = '{}'
 
     paths = as_real_files(config.get_files())
 

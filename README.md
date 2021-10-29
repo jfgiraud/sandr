@@ -104,7 +104,7 @@ is equivalent to (python syntax) :
 So the result of the replacement is :
 
 ```
-$ echo "abc" | ./bin/sandr -a map
+$ echo "abc" | sandr -a map
 X
 XYZ
 Z
@@ -116,7 +116,7 @@ Z
 You can use `\n` in patterns
 
 ```
-$ printf "Hello John Doe\nAnd Jane\nDOE.\n" | ./bin/sandr -m -S '((J\w+)\s+(D\w+))' -r '\1' -e > map
+$ printf "Hello John Doe\nAnd Jane\nDOE.\n" | sandr -m -S '((J\w+)\s+(D\w+))' -r '\1' -e > map
 $ cat map
 -Jane
 -DOE
@@ -156,13 +156,16 @@ bye john doe
 
 #### use option `-x` to execute a command and replace the result
 
-The option is not compatible with `-R` and `-e`
+The option is not compatible with `-a` 
 
 ```
-$ printf "Hello John Doe\nAnd Jane\nDOE.\n" | ./bin/sandr -m -S '((J\w+)\s+(D\w+))' -r '\1' -x "echo -n '{}' | tr 'aeiouyAEIOUY' '*'"
-Hello J*hn D**
-And J*n*
-D**.
+$ cat file.txt 
+Hello John Doe
+And Jane
+DOE.
+$ cat file.txt | sandr -m -S '((J\w+)\s+(D\w+))' -r "echo -n '\2' | tr 'aeiouyAEIOUY' '*'" -x
+Hello J*hn
+And J*n*.
 ```
 
 
