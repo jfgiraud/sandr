@@ -9,13 +9,13 @@ usage:
 	EOF
 
 
-.pip_cache: env/bin/activate
-	source env/bin/activate
+.pip_cache: venv/bin/activate
+	source venv/bin/activate
 	mkdir -p .pip_cache
 	python -m pip download -r tests/requirements.txt -d .pip_cache
 
-env/bin/activate:
-	test -d env || python3 -m venv env
+venv/bin/activate:
+	test -d venv || python3 -m venv venv
 
 tests/bash_unit:
 	curl -s https://raw.githubusercontent.com/pgrange/bash_unit/master/bash_unit -o tests/bash_unit
@@ -23,7 +23,7 @@ tests/bash_unit:
 
 .PHONY: test_py
 test_py: .pip_cache
-	source env/bin/activate
+	source venv/bin/activate
 	python -m pip install --no-index --find-links .pip_cache -r tests/requirements.txt
 	python3 -m pytest tests/
 
@@ -36,4 +36,4 @@ test: test_py test_sh
 
 .PHONY: clean
 clean:
-	rm -rf tests/bash_unit .pip_cache *.whl env
+	rm -rf tests/bash_unit .pip_cache *.whl env venv
