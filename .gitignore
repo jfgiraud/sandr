@@ -1,3 +1,4 @@
 /env/
 /tests/bash_unit
 /.pip_cache/
+/.idea/
