@@ -98,7 +98,7 @@ $ cat map
 is equivalent to (python syntax) :
 
 ```python
-{ 'a': 'X\n', 'b': 'Y', 'c': 'Z\nZ\nZ' }
+{ 'a': 'X\nX', 'b': 'Y', 'c': 'Z\nZ\nZ' }
 ```
 
 So the result of the replacement is :
