@@ -111,7 +111,7 @@ Z
 Z
 ```
 
-#### use option `-m` to toggle _ON_ the multiline mode
+#### use option `-m` to toggle *on* the multiline mode
 
 You can use `\n` in patterns
 
