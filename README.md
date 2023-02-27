@@ -1,5 +1,4 @@
 ![<https://github.com/jfgiraud/sandr/actions>](https://img.shields.io/github/actions/workflow/status/jfgiraud/sandr/main.yml?label=CI)
-![<https://jfgiraud.semaphoreci.com/projects/sandr>](https://jfgiraud.semaphoreci.com/badges/sandr/branches/master.svg)
 
 Description
 ===========
