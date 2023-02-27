@@ -38,7 +38,7 @@ and `man`.
 
 **Using latest tarball release.**
 
-    $ curl -s -L https://api.github.com/repos/jfgiraud/sandr/releases/latest | grep browser_download_url | cut -d':' -f2- | tr -d ' ",' | xargs wget -O occurrence-count.tgz
+    $ curl -s -L https://api.github.com/repos/jfgiraud/sandr/releases/latest | grep browser_download_url | cut -d':' -f2- | tr -d ' ",' | xargs wget -O sandr.tgz
     $ sudo tar zxvf sandr.tgz -C /usr/local
 
 Usage
