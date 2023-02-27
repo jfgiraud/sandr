@@ -1,0 +1,208 @@
+SANDR(1)                                                                     User commands                                                                    SANDR(1)
+
+NAME
+       sandr - Perform pattern replacement in files
+
+SYNOPSIS
+       sandr [OPTION] [FILE]
+
+DESCRIPTION
+       sandr is a tool to replace strings in files or standard streams.
+
+       It supports replacements for fixed strings and regular expressions, ignoring case or not.
+
+       For regular expressions, matching groups can be reused in replacement string.
+
+       Some options permit to :
+
+       ·   extract an association map (matches/replacements)
+
+       ·   apply an association map for mass replacements
+
+       ·   try to keep the character case
+
+       ·   preview modifications
+
+       ·   allow file renaming
+
+       With no FILE, or when FILE is -, read standard input.
+
+OPTIONS
+   Select and sort items
+       -h, --help
+           Display help.
+
+       -s, --search
+           The string to search.
+
+       -S, --search-regexp
+           The pattern to search.
+
+       -r, --replace
+           The string (or the pattern) used to replace all matches.
+
+       -e, --extract-map
+           Extract from file or standard input all matches of searched string or pattern. A map created with found matches is displayed on standard output. Entries of
+           this map will be set with a default value.
+
+       -i, --ignore-case
+           Search ignoring case.
+
+       -a, --apply-map
+           Use a file containing the map to perform replacement.
+
+       -c, --case
+           Apply transformations to try to keep the same case after replacement (useful with -i option).
+
+       -l, --min-matching-length
+           For case transformations, ignore matching group when the size is less than de specified value (default 3).
+
+       -t, --simulate
+           Perform a simulation for replacements. The results will be displayed on standard output.
+
+       -d, --diff
+           Compare files before and after replacements.
+
+       -m, --multiline
+           Swith on the multiline mode.
+
+       -R, --rename
+           Rename files if path matches searched string or pattern.
+
+       -x, --execute
+           Execute the string (or the pattern) used to replace all matches as a command. Then, the output of this command replaces all matches. The trailing newline
+           is suppressed.
+
+EXAMPLES
+       Use option -s to search fixed string
+
+           $ echo 'Hello John DOE' | sandr -s o -r'<o>'
+           Hell<o> J<o>hn DOE
+
+       Add option -i to ignore case
+
+           $ echo 'Hello John DOE' | sandr -i -s o -r'<o>'
+           Hell<o> J<o>hn D<o>E
+
+       Add option -c to try to reuse same case when replacing
+
+           $ echo 'Hello John Doe and Jane DOE' | sandr -i -c -s 'doe' -r 'smith'
+           Hello John Smith and Jane SMITH
+
+       Use option -S to search a pattern, the -r option can contain a reference to a matched group
+
+           $ echo 'Hello John DOE' | sandr -i -c -S '([aeiouy])' -r'<\1>'
+           H<e>ll<o> J<o>hn D<O><E>
+
+       Use option -e to extract a replacements map witch can be reused later
+
+           $ echo 'Hello John DOE' | sandr -e -i -c -S '([aeiouy])' -r'<\1>' > map
+           $ cat map
+           -E
+           +<E>
+           ---
+           -O
+           +<O>
+           ---
+           -e
+           +<e>
+           ---
+           -o
+           +<o>
+
+       Use option -a to apply a replacements map on files or standard streams
+       The given map can be handwritten or generated with the -e option.
+
+           $ cat map
+           -Hello
+           +Bonjour
+           ---
+           -DOE
+           +Durand
+           ---
+           $ echo 'Hello John DOE' | sandr -a map
+           Bonjour John Durand
+
+       The map can contain multiline keys or values.
+
+           $ cat map
+           -a
+           +X
+           +X
+           ---
+           -b
+           +Y
+           ---
+           -c
+           +Z
+           +Z
+           +Z
+
+       is equivalent to (python syntax) :
+
+           { 'a': 'X\nX', 'b': 'Y', 'c': 'Z\nZ\nZ' }
+
+       So the result of the replacement is :
+
+           $ echo "abc" | sandr -a map
+           X
+           XYZ
+           Z
+           Z
+
+       Use option -m to toggle on the multiline mode
+       You can use \n in patterns
+
+           $ printf "Hello John Doe\nAnd Jane\nDOE.\n" | sandr -m -S '((J\w+)\s+(D\w+))' -r '\1' -e > map
+           $ cat map
+           -Jane
+           -DOE
+           +Jane
+           +DOE
+           ---
+           -John Doe
+           +John Doe
+           ---
+
+       Use option -t to simulate replacements
+
+           $ echo 'Hello john doe' > hello_john_doe.txt
+           $ sandr -t -i -s hello -r bye hello_john_doe.txt
+           bye john doe
+
+       Use option -d to simulate and view replacements
+
+           $ sandr -d -i -s hello -r bye hello_john_doe.txt
+           {Hello=>bye} john doe
+
+       Use option -R to rename file when replacements can be done in filename
+
+           $ sandr -R -d -i -s hello -r bye hello_john_doe.txt
+           {Hello=>bye} john doe
+           File hello_john_doe.txt will be renamed to bye_john_doe.txt ({hello=>bye}_john_doe.txt)
+           $ sandr -R -i -s hello -r bye hello_john_doe.txt
+           Processed: hello_john_doe.txt (file renamed to bye_john_doe.txt)
+           $ ls
+           bye_john_doe.txt   sandr
+           $ cat bye_john_doe.txt
+           bye john doe
+
+       Use option -x to execute a command defined with -r and replace the result
+       The option is not compatible with -a
+
+           $ cat file.txt
+           Hello John Doe
+           And Jane
+           DOE.
+           $ cat file.txt | sandr -m -S '((J\w+)\s+(D\w+))' -r "echo -n '\2' | tr 'aeiouyAEIOUY' '*'" -x
+           Hello J*hn
+           And J*n*.
+
+AUTHOR
+       Written by Jean-François Giraud.
+
+COPYRIGHT
+       Copyright  ©  2020  Jean-François Giraud. License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to
+       change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
+
+sandr 0.0.1                                                                   2023-02-27                                                                      SANDR(1)

@@ -1,7 +1,14 @@
-![<https://github.com/jfgiraud/occurrence-count/actions>](https://img.shields.io/github/actions/workflow/status/jfgiraud/occurrence-count/main.yml?label=CI)
-![<https://jfgiraud.semaphoreci.com/projects/sandr>](https://jfgiraud.semaphoreci.com/badges/sandr/branches/master.svg)
+NAME
+====
 
-Description
+sandr - Perform pattern replacement in files
+
+SYNOPSIS
+========
+
+**sandr** \[*OPTION*\] \[*FILE*\]
+
+DESCRIPTION
 ===========
 
 **sandr** is a tool to replace strings in files or standard streams.
@@ -24,36 +31,65 @@ Some options permit to :
 
 -   allow file renaming
 
-Installation
-============
+With no FILE, or when FILE is `-`, read standard input.
 
-The destination directory will contain 3 sub-directories: `bin`, `share`
-and `man`.
+OPTIONS
+=======
 
-**Using git repo.**
+Select and sort items
+---------------------
 
-    $ git clone https://github.com/jfgiraud/sandr.git
-    $ cd sandr
-    $ sudo make install DESTDIR=/usr/local
+**-h**, **--help**  
+Display help.
 
-**Using latest tarball release.**
+**-s**, **--search**  
+The string to search.
 
-    $ curl -s -L https://api.github.com/repos/jfgiraud/sandr/releases/latest | grep browser_download_url | cut -d':' -f2- | tr -d ' ",' | xargs wget -O occurrence-count.tgz
-    $ sudo tar zxvf sandr.tgz -C /usr/local
+**-S**, **--search-regexp**  
+The pattern to search.
 
-Usage
-=====
+**-r**, **--replace**  
+The string (or the pattern) used to replace all matches.
 
-**Use man.**
+**-e**, **--extract-map**  
+Extract from file or standard input all matches of searched string or
+pattern. A map created with found matches is displayed on standard
+output. Entries of this map will be set with a default value.
 
-    $ man sandr
+**-i**, **--ignore-case**  
+Search ignoring case.
 
-**Use option.**
+**-a**, **--apply-map**  
+Use a file containing the map to perform replacement.
 
-    $ sandr -h
+**-c**, **--case**  
+Apply transformations to try to keep the same case after replacement
+(useful with -i option).
 
-TLDR
-====
+**-l**, **--min-matching-length**  
+For case transformations, ignore matching group when the size is less
+than de specified value (default 3).
+
+**-t**, **--simulate**  
+Perform a simulation for replacements. The results will be displayed on
+standard output.
+
+**-d**, **--diff**  
+Compare files before and after replacements.
+
+**-m**, **--multiline**  
+Swith on the multiline mode.
+
+**-R**, **--rename**  
+Rename files if path matches searched string or pattern.
+
+**-x**, **--execute**  
+Execute the string (or the pattern) used to replace all matches as a
+command. Then, the output of this command replaces all matches. The
+trailing newline is suppressed.
+
+EXAMPLES
+========
 
 **Use option `-s` to search fixed string.**
 

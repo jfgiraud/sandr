@@ -1,0 +1,43 @@
+image:https://img.shields.io/github/actions/workflow/status/jfgiraud/occurrence-count/main.yml?label=CI[https://github.com/jfgiraud/occurrence-count/actions]
+image:https://jfgiraud.semaphoreci.com/badges/sandr/branches/master.svg[https://jfgiraud.semaphoreci.com/projects/sandr]
+
+== Description
+
+include::sandr.adoc[tag=description]
+
+== Installation
+
+The destination directory will contain 3 sub-directories: `bin`, `share` and `man`.
+
+.Using git repo
+[source,shell]
+----
+$ git clone https://github.com/jfgiraud/sandr.git
+$ cd sandr
+$ sudo make install DESTDIR=/usr/local
+----
+
+.Using latest tarball release
+[source,shell]
+----
+$ curl -s -L https://api.github.com/repos/jfgiraud/sandr/releases/latest | grep browser_download_url | cut -d':' -f2- | tr -d ' ",' | xargs wget -O occurrence-count.tgz
+$ sudo tar zxvf sandr.tgz -C /usr/local
+----
+
+== Usage
+
+.Use man
+[source,shell]
+----
+$ man sandr
+----
+
+.Use option
+[source,shell]
+----
+$ sandr -h
+----
+
+== TLDR
+
+include::sandr.adoc[tag=examples]

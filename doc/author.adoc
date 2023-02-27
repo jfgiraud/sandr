@@ -1,0 +1,4 @@
+== AUTHOR
+
+Written by Jean-François Giraud.
+
