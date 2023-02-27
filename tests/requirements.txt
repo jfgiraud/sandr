@@ -1,2 +1,2 @@
 # developement:
-pytest==6.2.1
+pytest==7.0.1
