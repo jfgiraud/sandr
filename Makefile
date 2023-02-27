@@ -82,7 +82,7 @@ $(REPOSITORY_NAME).tar.gz: $(REPOSITORY_NAME).tar
 
 $(REPOSITORY_NAME).tar: update-doc
 	@echo "Create archive $@"
-	@tar cf $(REPOSITORY_NAME).tar bin/*
+	@tar cf $(REPOSITORY_NAME).tar --exclude=__pycache__ bin/*
 	@tar rf $(REPOSITORY_NAME).tar LICENSE --transform 's,^,share/doc/$(REPOSITORY_NAME)/,'
 	@tar rf $(REPOSITORY_NAME).tar doc/generated/man/man1/*.1 --transform 's,^doc/generated/,,'
 
