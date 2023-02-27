@@ -205,4 +205,4 @@ COPYRIGHT
        Copyright  ©  2020  Jean-François Giraud. License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>. This is
        free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
-sandr 0.0.2                                                    2023-02-27                                                      SANDR(1)
+sandr 0.0.3                                                    2023-02-27                                                      SANDR(1)
