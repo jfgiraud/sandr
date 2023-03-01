@@ -46,7 +46,7 @@ doc/generated/md/%.md: doc/%.adoc doc/VERSION
 
 doc/generated/txt/%.1.txt: doc/generated/man/man1/%.1 doc/VERSION
 	@echo "Create $@"
-	@man -l $< > $@
+	@man -l $< | sed -e 's#\\#\\\\#g' > $@
 	@SCRIPT=$(shell basename "$@" | sed 's/\..*//')
 	@echo "Rewrite usage in $$SCRIPT"
 	@awk -i inplace -v input="$@" 'BEGIN { p = 1 } /#BEGIN_DO_NOT_MODIFY:make update-doc/{ print; p = 0; while(getline line<input){print line} } /#END_DO_NOT_MODIFY:make update-doc/{ p = 1 } p' bin/$$SCRIPT
