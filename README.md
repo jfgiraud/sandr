@@ -51,7 +51,7 @@ Usage
 
     $ sandr -h
 
-TLDR
+Examples
 ====
 
 **Use option `-s` to search fixed string.**
