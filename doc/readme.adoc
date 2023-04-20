@@ -37,6 +37,6 @@ $ man sandr
 $ sandr -h
 ----
 
-== TLDR
+== Examples
 
 include::sandr.adoc[tag=examples]
