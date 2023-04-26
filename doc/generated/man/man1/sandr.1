@@ -2,12 +2,12 @@
 .\"     Title: sandr
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: Asciidoctor 1.5.5
-.\"      Date: 2023-02-27
+.\"      Date: 2023-04-25
 .\"    Manual: User commands
-.\"    Source: sandr 0.0.3
+.\"    Source: sandr 0.0.4
 .\"  Language: English
 .\"
-.TH "SANDR" "1" "2023-02-27" "sandr 0.0.3" "User commands"
+.TH "SANDR" "1" "2023-04-25" "sandr 0.0.4" "User commands"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -92,11 +92,6 @@ With no FILE, or when FILE is \f[CR]\-\fP, read standard input.
 .SH "OPTIONS"
 .SS "Select and sort items"
 .sp
-\fB\-h\fP, \fB\-\-help\fP
-.RS 4
-Display help.
-.RE
-.sp
 \fB\-s\fP, \fB\-\-search\fP
 .RS 4
 The string to search.
@@ -164,6 +159,17 @@ Rename files if path matches searched string or pattern.
 .RS 4
 Execute the string (or the pattern) used to replace all matches as a command.
 Then, the output of this command replaces all matches. The trailing newline is suppressed.
+.RE
+.SS "Others options"
+.sp
+\fB\-h\fP, \fB\-\-help\fP
+.RS 4
+Display help.
+.RE
+.sp
+\fB\-v\fP, \fB\-\-version\fP
+.RS 4
+Display version.
 .RE
 .SH "EXAMPLES"
 .sp

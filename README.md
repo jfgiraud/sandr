@@ -52,7 +52,7 @@ Usage
     $ sandr -h
 
 Examples
-====
+========
 
 **Use option `-s` to search fixed string.**
 

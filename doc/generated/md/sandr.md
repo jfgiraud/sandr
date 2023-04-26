@@ -39,9 +39,6 @@ OPTIONS
 Select and sort items
 ---------------------
 
-**-h**, **--help**  
-Display help.
-
 **-s**, **--search**  
 The string to search.
 
@@ -87,6 +84,15 @@ Rename files if path matches searched string or pattern.
 Execute the string (or the pattern) used to replace all matches as a
 command. Then, the output of this command replaces all matches. The
 trailing newline is suppressed.
+
+Others options
+--------------
+
+**-h**, **--help**  
+Display help.
+
+**-v**, **--version**  
+Display version.
 
 EXAMPLES
 ========

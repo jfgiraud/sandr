@@ -17,9 +17,7 @@ import subprocess
 # python sandr.py -e -s BONjour -r helLO -i aaa
 # bug python sandr.py -e -s '((\w+)jour)' -r 'helLO\1' -i aaa
 
-
-def usage(retval=0):
-    print(re.sub('#(BEGIN|END)_DO_NOT_MODIFY:make update-doc\n', '', '''#BEGIN_DO_NOT_MODIFY:make update-doc
+_USAGE = '''#BEGIN_DO_NOT_MODIFY:make update-doc
 SANDR(1)                                                                                        User commands                                                                                        SANDR(1)
 
 NAME
@@ -51,9 +49,6 @@ DESCRIPTION
 
 OPTIONS
    Select and sort items
-       -h, --help
-           Display help.
-
        -s, --search
            The string to search.
 
@@ -93,6 +88,13 @@ OPTIONS
 
        -x, --execute
            Execute the string (or the pattern) used to replace all matches as a command. Then, the output of this command replaces all matches. The trailing newline is suppressed.
+
+   Others options
+       -h, --help
+           Display help.
+
+       -v, --version
+           Display version.
 
 EXAMPLES
        Use option -s to search fixed string
@@ -226,10 +228,22 @@ COPYRIGHT
        Copyright © 2020 Jean-François Giraud. License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to change and redistribute it. There  is  NO
        WARRANTY, to the extent permitted by law.
 
-sandr 0.0.3                                                                                       2023-02-27                                                                                         SANDR(1)
+sandr 0.0.4                                                                                       2023-04-25                                                                                         SANDR(1)
 #END_DO_NOT_MODIFY:make update-doc
-'''))
+'''
+
+def usage(retval=0):
+    print(re.sub('#(BEGIN|END)_DO_NOT_MODIFY:make update-doc\n', '', _USAGE))
     sys.exit(retval)
+
+def version():
+    lines = _USAGE.split('\n')
+    for i, line in enumerate(lines):
+        if line.startswith("#END_DO_NOT_MODIFY:make update-doc"):
+            previous_line = lines[i-1]
+            print(previous_line.split()[1])
+            break
+    sys.exit(0)
 
 
 def error(message):
@@ -486,11 +500,11 @@ class Config:
     def parse(self, arguments):
         opts, args = [], []
         try:
-            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRxm",
+            opts, args = getopt.getopt(arguments, "hs:S:r:itea:cl:dRxmv",
                                        ["help", "search=", "search-regexp=", "replace=",
                                         "ignore-case", "simulate", "extract-map",
                                         "apply-map=", "case", "min-matching-length=",
-                                        "diff", "rename", "execute", "multiline"])
+                                        "diff", "rename", "execute", "multiline", "version"])
         except getopt.GetoptError as e:
             error(e)
 
@@ -500,6 +514,8 @@ class Config:
         for o, a in opts:
             if o in ("-h", "--help"):
                 usage()
+            if o in ("-v", "--version"):
+                version()
             if o in ("-s", "--search"):
                 self.search = a
             if o in ("-r", "--replace"):
