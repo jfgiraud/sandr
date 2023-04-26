@@ -58,6 +58,7 @@ README.md: doc/generated/md/readme.md
 .PHONY: update-version
 update-version:
 	[[ "$(VERSION)" == "$(FILE_VERSION)" ]] && echo "Change version number! (make update-version VERSION=X.Y.Z)" && exit 1
+	! grep -Eq "^## ${VERSION}\b" CHANGELOG.md && echo "No information about this version in CHANGELOG.md. Add an entry in CHANGELOG.md!"
 	@echo "Modify version in doc/VERSION"
 	@echo "$(VERSION)" > doc/VERSION
 	make update-doc
