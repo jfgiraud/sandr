@@ -228,13 +228,21 @@ COPYRIGHT
        Copyright © 2020 Jean-François Giraud. License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to change and redistribute it. There  is  NO
        WARRANTY, to the extent permitted by law.
 
-sandr 0.0.5                                                                                       2023-04-25                                                                                         SANDR(1)
+sandr 0.0.6                                                                                       2023-04-25                                                                                         SANDR(1)
 #END_DO_NOT_MODIFY:make update-doc
 '''
 
-def usage(retval=0):
-    print(re.sub('#(BEGIN|END)_DO_NOT_MODIFY:make update-doc\n', '', _USAGE))
-    sys.exit(retval)
+def usage():
+    lines = _USAGE.split('\n')
+    display = False
+    for i, line in enumerate(lines):
+        if line.startswith("NAME"):
+            display = True
+        if line.startswith("AUTHOR"):
+            display = False
+        if display:
+            print(line)
+    sys.exit(0)
 
 def version():
     lines = _USAGE.split('\n')
