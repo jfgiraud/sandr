@@ -1,7 +1,7 @@
 ![<https://github.com/jfgiraud/sandr/actions>](https://img.shields.io/github/actions/workflow/status/jfgiraud/sandr/main.yml?label=CI)
 
 Description
-===========
+=========== 
 
 **sandr** is a tool to replace strings in files or standard streams.
 
