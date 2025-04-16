@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.7 (2025-04-16)
+* Fix bug (-S (ABC) -r 'x\1y' does not replace with xABCy)
+
 ## 0.0.6 (2023-04-26)
 * Change the method to display help
 
