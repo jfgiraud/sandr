@@ -19,7 +19,7 @@ import itertools
 # bug python sandr.py -e -s '((\w+)jour)' -r 'helLO\1' -i aaa
 
 _USAGE = '''#BEGIN_DO_NOT_MODIFY:make update-doc
-SANDR(1)                                                                                        User commands                                                                                        SANDR(1)
+SANDR(1)                                                                                            User commands                                                                                           SANDR(1)
 
 NAME
        sandr - Perform pattern replacement in files
@@ -36,15 +36,15 @@ DESCRIPTION
 
        Some options permit to :
 
-       ·   extract an association map (matches/replacements)
+       •   extract an association map (matches/replacements)
 
-       ·   apply an association map for mass replacements
+       •   apply an association map for mass replacements
 
-       ·   try to keep the character case
+       •   try to keep the character case
 
-       ·   preview modifications
+       •   preview modifications
 
-       ·   allow file renaming
+       •   allow file renaming
 
        With no FILE, or when FILE is -, read standard input.
 
@@ -60,8 +60,7 @@ OPTIONS
            The string (or the pattern) used to replace all matches.
 
        -e, --extract-map
-           Extract from file or standard input all matches of searched string or pattern. A map created with found matches is displayed on standard output. Entries of this map will be set with a default
-           value.
+           Extract from file or standard input all matches of searched string or pattern. A map created with found matches is displayed on standard output. Entries of this map will be set with a default value.
 
        -i, --ignore-case
            Search ignoring case.
@@ -226,10 +225,10 @@ AUTHOR
        Written by Jean-François Giraud.
 
 COPYRIGHT
-       Copyright © 2020 Jean-François Giraud. License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to change and redistribute it. There  is  NO
-       WARRANTY, to the extent permitted by law.
+       Copyright © 2020 Jean-François Giraud. License GPLv3+: GNU GPL version 3 or later http://gnu.org/licenses/gpl.html. This is free software: you are free to change and redistribute it. There is NO WARRANTY,
+       to the extent permitted by law.
 
-sandr 0.0.6                                                                                       2023-04-25                                                                                         SANDR(1)
+sandr 0.0.7                                                                                          2025-04-16                                                                                             SANDR(1)
 #END_DO_NOT_MODIFY:make update-doc
 '''
 

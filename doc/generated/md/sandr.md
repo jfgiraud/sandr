@@ -1,15 +1,12 @@
-NAME
-====
+# NAME
 
 sandr - Perform pattern replacement in files
 
-SYNOPSIS
-========
+# SYNOPSIS
 
 **sandr** \[*OPTION*\] \[*FILE*\]
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
 **sandr** is a tool to replace strings in files or standard streams.
 
@@ -33,11 +30,9 @@ Some options permit to :
 
 With no FILE, or when FILE is `-`, read standard input.
 
-OPTIONS
-=======
+# OPTIONS
 
-Select and sort items
----------------------
+## Select and sort items
 
 **-s**, **--search**  
 The string to search.
@@ -85,8 +80,7 @@ Execute the string (or the pattern) used to replace all matches as a
 command. Then, the output of this command replaces all matches. The
 trailing newline is suppressed.
 
-Others options
---------------
+## Others options
 
 **-h**, **--help**  
 Display help.
@@ -94,32 +88,31 @@ Display help.
 **-v**, **--version**  
 Display version.
 
-EXAMPLES
-========
+# EXAMPLES
 
-**Use option `-s` to search fixed string.**
+**Use option `-s` to search fixed string**
 
     $ echo 'Hello John DOE' | sandr -s o -r'<o>'
     Hell<o> J<o>hn DOE
 
-**Add option `-i` to ignore case.**
+**Add option `-i` to ignore case**
 
     $ echo 'Hello John DOE' | sandr -i -s o -r'<o>'
     Hell<o> J<o>hn D<o>E
 
-**Add option `-c` to try to reuse same case when replacing.**
+**Add option `-c` to try to reuse same case when replacing**
 
     $ echo 'Hello John Doe and Jane DOE' | sandr -i -c -s 'doe' -r 'smith'
     Hello John Smith and Jane SMITH
 
 **Use option `-S` to search a pattern, the `-r` option can contain a
-reference to a matched group.**
+reference to a matched group**
 
     $ echo 'Hello John DOE' | sandr -i -c -S '([aeiouy])' -r'<\1>'
     H<e>ll<o> J<o>hn D<O><E>
 
 **Use option `-e` to extract a replacements map witch can be reused
-later.**
+later**
 
     $ echo 'Hello John DOE' | sandr -e -i -c -S '([aeiouy])' -r'<\1>' > map
     $ cat map
@@ -136,7 +129,7 @@ later.**
     +<o>
 
 **Use option `-a` to apply a replacements map on files or standard
-streams.**
+streams**
 
 The given map can be handwritten or generated with the `-e` option.
 
@@ -177,7 +170,7 @@ So the result of the replacement is :
     Z
     Z
 
-**Use option `-m` to toggle **on** the multiline mode.**
+**Use option `-m` to toggle **on** the multiline mode**
 
 You can use `\n` in patterns
 
@@ -192,19 +185,19 @@ You can use `\n` in patterns
     +John Doe
     ---
 
-**Use option `-t` to simulate replacements.**
+**Use option `-t` to simulate replacements**
 
     $ echo 'Hello john doe' > hello_john_doe.txt
     $ sandr -t -i -s hello -r bye hello_john_doe.txt
     bye john doe
 
-**Use option `-d` to simulate and view replacements.**
+**Use option `-d` to simulate and view replacements**
 
     $ sandr -d -i -s hello -r bye hello_john_doe.txt
     {Hello=>bye} john doe
 
 **Use option `-R` to rename file when replacements can be done in
-filename.**
+filename**
 
     $ sandr -R -d -i -s hello -r bye hello_john_doe.txt
     {Hello=>bye} john doe
@@ -217,7 +210,7 @@ filename.**
     bye john doe
 
 **Use option `-x` to execute a command defined with `-r` and replace the
-result.**
+result**
 
 The option is not compatible with `-a`
 

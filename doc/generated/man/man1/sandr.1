@@ -1,23 +1,32 @@
 '\" t
 .\"     Title: sandr
-.\"    Author: [see the "AUTHORS" section]
-.\" Generator: Asciidoctor 1.5.5
-.\"      Date: 2023-04-25
+.\"    Author: [see the "AUTHOR(S)" section]
+.\" Generator: Asciidoctor 2.0.18
+.\"      Date: 2025-04-16
 .\"    Manual: User commands
-.\"    Source: sandr 0.0.6
+.\"    Source: sandr 0.0.7
 .\"  Language: English
 .\"
-.TH "SANDR" "1" "2023-04-25" "sandr 0.0.6" "User commands"
+.TH "SANDR" "1" "2025-04-16" "sandr 0.0.7" "User commands"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
 .nh
 .ad l
 .de URL
-\\$2 \(laURL: \\$1 \(ra\\$3
+\fI\\$2\fP <\\$1>\\$3
 ..
-.if \n[.g] .mso www.tmac
-.LINKSTYLE blue R < >
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
 .SH "NAME"
 sandr \- Perform pattern replacement in files
 .SH "SYNOPSIS"
@@ -38,8 +47,8 @@ Some options permit to :
 \h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
-.sp -1
-.IP \(bu 2.3
+.  sp -1
+.  IP \(bu 2.3
 .\}
 extract an association map (matches/replacements)
 .RE
@@ -49,8 +58,8 @@ extract an association map (matches/replacements)
 \h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
-.sp -1
-.IP \(bu 2.3
+.  sp -1
+.  IP \(bu 2.3
 .\}
 apply an association map for mass replacements
 .RE
@@ -60,8 +69,8 @@ apply an association map for mass replacements
 \h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
-.sp -1
-.IP \(bu 2.3
+.  sp -1
+.  IP \(bu 2.3
 .\}
 try to keep the character case
 .RE
@@ -71,8 +80,8 @@ try to keep the character case
 \h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
-.sp -1
-.IP \(bu 2.3
+.  sp -1
+.  IP \(bu 2.3
 .\}
 preview modifications
 .RE
@@ -82,13 +91,13 @@ preview modifications
 \h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
-.sp -1
-.IP \(bu 2.3
+.  sp -1
+.  IP \(bu 2.3
 .\}
 allow file renaming
 .RE
 .sp
-With no FILE, or when FILE is \f[CR]\-\fP, read standard input.
+With no FILE, or when FILE is \f(CR\-\fP, read standard input.
 .SH "OPTIONS"
 .SS "Select and sort items"
 .sp
@@ -173,70 +182,61 @@ Display version.
 .RE
 .SH "EXAMPLES"
 .sp
-.B Use option \f[CR]\-s\fP to search fixed string
+.B Use option \f(CR\-s\fP to search fixed string
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ echo \(aqHello John DOE\(aq | sandr \-s o \-r\(aq<o>\(aq
+.fam C
+$ echo \*(AqHello John DOE\*(Aq | sandr \-s o \-r\*(Aq<o>\*(Aq
 Hell<o> J<o>hn DOE
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Add option \f[CR]\-i\fP to ignore case
+.B Add option \f(CR\-i\fP to ignore case
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ echo \(aqHello John DOE\(aq | sandr \-i \-s o \-r\(aq<o>\(aq
+.fam C
+$ echo \*(AqHello John DOE\*(Aq | sandr \-i \-s o \-r\*(Aq<o>\*(Aq
 Hell<o> J<o>hn D<o>E
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Add option \f[CR]\-c\fP to try to reuse same case when replacing
+.B Add option \f(CR\-c\fP to try to reuse same case when replacing
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ echo \(aqHello John Doe and Jane DOE\(aq | sandr \-i \-c \-s \(aqdoe\(aq \-r \(aqsmith\(aq
+.fam C
+$ echo \*(AqHello John Doe and Jane DOE\*(Aq | sandr \-i \-c \-s \*(Aqdoe\*(Aq \-r \*(Aqsmith\*(Aq
 Hello John Smith and Jane SMITH
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-S\fP to search a pattern, the \f[CR]\-r\fP option can contain a reference to a matched group
+.B Use option \f(CR\-S\fP to search a pattern, the \f(CR\-r\fP option can contain a reference to a matched group
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ echo \(aqHello John DOE\(aq | sandr \-i \-c \-S \(aq([aeiouy])\(aq \-r\(aq<\(rs1>\(aq
+.fam C
+$ echo \*(AqHello John DOE\*(Aq | sandr \-i \-c \-S \*(Aq([aeiouy])\*(Aq \-r\*(Aq<\(rs1>\*(Aq
 H<e>ll<o> J<o>hn D<O><E>
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-e\fP to extract a replacements map witch can be reused later
+.B Use option \f(CR\-e\fP to extract a replacements map witch can be reused later
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ echo \(aqHello John DOE\(aq | sandr \-e \-i \-c \-S \(aq([aeiouy])\(aq \-r\(aq<\(rs1>\(aq > map
+.fam C
+$ echo \*(AqHello John DOE\*(Aq | sandr \-e \-i \-c \-S \*(Aq([aeiouy])\*(Aq \-r\*(Aq<\(rs1>\*(Aq > map
 $ cat map
 \-E
 +<E>
@@ -249,19 +249,17 @@ $ cat map
 \-\-\-
 \-o
 +<o>
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-a\fP to apply a replacements map on files or standard streams
+.B Use option \f(CR\-a\fP to apply a replacements map on files or standard streams
 .br
-The given map can be handwritten or generated with the \f[CR]\-e\fP option.
+The given map can be handwritten or generated with the \f(CR\-e\fP option.
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
 $ cat map
 \-Hello
 +Bonjour
@@ -269,19 +267,17 @@ $ cat map
 \-DOE
 +Durand
 \-\-\-
-$ echo \(aqHello John DOE\(aq | sandr \-a map
+$ echo \*(AqHello John DOE\*(Aq | sandr \-a map
 Bonjour John Durand
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
 The map can contain multiline keys or values.
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
 $ cat map
 \-a
 +X
@@ -294,48 +290,42 @@ $ cat map
 +Z
 +Z
 +Z
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
 is equivalent to (python syntax) :
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-{ \(aqa\(aq: \(aqX\(rsnX\(aq, \(aqb\(aq: \(aqY\(aq, \(aqc\(aq: \(aqZ\(rsnZ\(rsnZ\(aq }
+.fam C
+{ \*(Aqa\*(Aq: \*(AqX\(rsnX\*(Aq, \*(Aqb\*(Aq: \*(AqY\*(Aq, \*(Aqc\*(Aq: \*(AqZ\(rsnZ\(rsnZ\*(Aq }
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
 So the result of the replacement is :
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
 $ echo "abc" | sandr \-a map
 X
 XYZ
 Z
 Z
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-m\fP to toggle \fBon\fP the multiline mode
+.B Use option \f(CR\-m\fP to toggle \fBon\fP the multiline mode
 .br
-You can use \f[CR]\(rsn\fP in patterns
+You can use \f(CR\(rsn\fP in patterns
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ printf "Hello John Doe\(rsnAnd Jane\(rsnDOE.\(rsn" | sandr \-m \-S \(aq((J\(rsw+)\(rss+(D\(rsw+))\(aq \-r \(aq\(rs1\(aq \-e > map
+.fam C
+$ printf "Hello John Doe\(rsnAnd Jane\(rsnDOE.\(rsn" | sandr \-m \-S \*(Aq((J\(rsw+)\(rss+(D\(rsw+))\*(Aq \-r \*(Aq\(rs1\*(Aq \-e > map
 $ cat map
 \-Jane
 \-DOE
@@ -345,47 +335,41 @@ $ cat map
 \-John Doe
 +John Doe
 \-\-\-
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-t\fP to simulate replacements
+.B Use option \f(CR\-t\fP to simulate replacements
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
-$ echo \(aqHello john doe\(aq > hello_john_doe.txt
+.fam C
+$ echo \*(AqHello john doe\*(Aq > hello_john_doe.txt
 $ sandr \-t \-i \-s hello \-r bye hello_john_doe.txt
 bye john doe
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-d\fP to simulate and view replacements
+.B Use option \f(CR\-d\fP to simulate and view replacements
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
 $ sandr \-d \-i \-s hello \-r bye hello_john_doe.txt
 {Hello=>bye} john doe
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-R\fP to rename file when replacements can be done in filename
+.B Use option \f(CR\-R\fP to rename file when replacements can be done in filename
 .br
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
 $ sandr \-R \-d \-i \-s hello \-r bye hello_john_doe.txt
 {Hello=>bye} john doe
 File hello_john_doe.txt will be renamed to bye_john_doe.txt ({hello=>bye}_john_doe.txt)
@@ -395,30 +379,27 @@ $ ls
 bye_john_doe.txt   sandr
 $ cat bye_john_doe.txt
 bye john doe
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-.B Use option \f[CR]\-x\fP to execute a command defined with \f[CR]\-r\fP and replace the result
+.B Use option \f(CR\-x\fP to execute a command defined with \f(CR\-r\fP and replace the result
 .br
-The option is not compatible with \f[CR]\-a\fP
+The option is not compatible with \f(CR\-a\fP
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
 $ cat file.txt
 Hello John Doe
 And Jane
 DOE.
-$ cat file.txt | sandr \-m \-S \(aq((J\(rsw+)\(rss+(D\(rsw+))\(aq \-r "echo \-n \(aq\(rs2\(aq | tr \(aqaeiouyAEIOUY\(aq \(aq*\(aq" \-x
+$ cat file.txt | sandr \-m \-S \*(Aq((J\(rsw+)\(rss+(D\(rsw+))\*(Aq \-r "echo \-n \*(Aq\(rs2\*(Aq | tr \*(AqaeiouyAEIOUY\*(Aq \*(Aq*\*(Aq" \-x
 Hello J*hn
 And J*n*.
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .SH "AUTHOR"
 .sp
 Written by Jean\-François Giraud.
